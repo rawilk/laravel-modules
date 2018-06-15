@@ -1,0 +1,10 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use $BASE_CLASS$;
+
+class $CLASS$ extends $BASE_CLASS_SHORT$
+{
+
+}

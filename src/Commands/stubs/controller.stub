@@ -1,0 +1,18 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use $BASE_CLASS$;
+
+class $CLASS$ extends $BASE_CLASS_SHORT$
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        return view('$LOWER_NAME$::index');
+    }
+}

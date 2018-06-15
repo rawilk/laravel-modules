@@ -1,0 +1,31 @@
+{
+  "name": "rawilk/recipe",
+  "description": "",
+  "require": {
+    "php": ">=7.2",
+    "composer/installers": "~1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0",
+    "orchestra/testbench": "~3.1"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Modules\\Recipe\\": ".",
+      "Modules\\": "Modules/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "authors": [
+    {
+      "name": "Randall Wilk",
+      "email": "randall@randallwilk.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Modules\\Recipe\\": ""
+    }
+  }
+}
