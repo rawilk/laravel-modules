@@ -7,11 +7,11 @@ use Modules\Recipe\Repositories\RecipeRepository;
 
 class CacheRecipeDecorator extends BaseCacheDecorator implements RecipeRepository
 {
-	public function __construct(RecipeRepository $recipe)
-	{
-		parent::__construct();
+    public function __construct(RecipeRepository $recipe)
+    {
+        parent::__construct();
 
-		$this->entityName = 'recipe.recipes';
-		$this->repository = $recipe;
-	}
+        $this->entityName = 'recipe.recipes';
+        $this->repository = $recipe;
+    }
 }

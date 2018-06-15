@@ -44,89 +44,89 @@ use Rawilk\LaravelModules\Commands\LaravelModules\UseCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
 
-	/**
-	 * The generator commands to register.
-	 *
-	 * @var array
-	 */
-	protected $generatorCommands = [
-		CommandMakeCommand::class,
-		ControllerMakeCommand::class,
-		EventMakeCommand::class,
-		FactoryMakeCommand::class,
-		ListenerMakeCommand::class,
-		ModuleMakeCommand::class,
-		JobMakeCommand::class,
-		MailMakeCommand::class,
-		MiddlewareMakeCommand::class,
-		MigrationMakeCommand::class,
-		ModelMakeCommand::class,
-		PolicyMakeCommand::class,
-		ProviderMakeCommand::class,
-		RequestMakeCommand::class,
-		ResourceMakeCommand::class,
-		RouteProviderMakeCommand::class,
-		RuleMakeCommand::class,
-		SeedMakeCommand::class,
-		TestMakeCommand::class,
-	];
+    /**
+     * The generator commands to register.
+     *
+     * @var array
+     */
+    protected $generatorCommands = [
+        CommandMakeCommand::class,
+        ControllerMakeCommand::class,
+        EventMakeCommand::class,
+        FactoryMakeCommand::class,
+        ListenerMakeCommand::class,
+        ModuleMakeCommand::class,
+        JobMakeCommand::class,
+        MailMakeCommand::class,
+        MiddlewareMakeCommand::class,
+        MigrationMakeCommand::class,
+        ModelMakeCommand::class,
+        PolicyMakeCommand::class,
+        ProviderMakeCommand::class,
+        RequestMakeCommand::class,
+        ResourceMakeCommand::class,
+        RouteProviderMakeCommand::class,
+        RuleMakeCommand::class,
+        SeedMakeCommand::class,
+        TestMakeCommand::class,
+    ];
 
-	/**
-	 * The laravel modules commands to register.
-	 *
-	 * @var array
-	 */
-	protected $laravelModulesCommands = [
-		DisableCommand::class,
-		DumpCommand::class,
-		EnableCommand::class,
-		InstallCommand::class,
-		ListCommand::class,
-		MigrateCommand::class,
-		MigrateRefreshCommand::class,
-		MigrateResetCommand::class,
-		MigrateRollbackCommand::class,
-		MigrateStatusCommand::class,
-		PublishCommand::class,
-		PublishConfigurationCommand::class,
-		PublishMigrationCommand::class,
-		PublishTranslationCommand::class,
-		SeedCommand::class,
-		SetupCommand::class,
-		UnUseCommand::class,
-		UpdateCommand::class,
-		UseCommand::class,
-	];
+    /**
+     * The laravel modules commands to register.
+     *
+     * @var array
+     */
+    protected $laravelModulesCommands = [
+        DisableCommand::class,
+        DumpCommand::class,
+        EnableCommand::class,
+        InstallCommand::class,
+        ListCommand::class,
+        MigrateCommand::class,
+        MigrateRefreshCommand::class,
+        MigrateResetCommand::class,
+        MigrateRollbackCommand::class,
+        MigrateStatusCommand::class,
+        PublishCommand::class,
+        PublishConfigurationCommand::class,
+        PublishMigrationCommand::class,
+        PublishTranslationCommand::class,
+        SeedCommand::class,
+        SetupCommand::class,
+        UnUseCommand::class,
+        UpdateCommand::class,
+        UseCommand::class,
+    ];
 
-	/**
-	 * Bootstrap any application services.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
-		if ($this->app->runningInConsole()) {
-			$this->commands($this->laravelModulesCommands);
-			$this->commands($this->generatorCommands);
-		}
-	}
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands($this->laravelModulesCommands);
+            $this->commands($this->generatorCommands);
+        }
+    }
 
-	/**
-	 * Register any application services.
-	 *
-	 * @return array
-	 */
-	public function register()
-	{
-		$provides = $this->generatorCommands;
+    /**
+     * Register any application services.
+     *
+     * @return array
+     */
+    public function register()
+    {
+        $provides = $this->generatorCommands;
 
-		return $provides;
-	}
+        return $provides;
+    }
 }

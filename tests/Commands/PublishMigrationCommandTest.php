@@ -6,51 +6,51 @@ use Rawilk\LaravelModules\Tests\BaseTestCase;
 
 class PublishMigrationCommandTest extends BaseTestCase
 {
-	/**
-	 * @var \Illuminate\Filesystem\Filesystem
-	 */
-	private $finder;
+    /**
+     * @var \Illuminate\Filesystem\Filesystem
+     */
+    private $finder;
 
-	/**
-	 * @var string
-	 */
-	private $modulePath;
+    /**
+     * @var string
+     */
+    private $modulePath;
 
-	/**
-	 * Setup the test environment.
-	 *
-	 * @return void
-	 */
-	public function setUp()
-	{
-		parent::setUp();
+    /**
+     * Setup the test environment.
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
 
-		$this->modulePath = base_path('Modules/Blog');
-		$this->finder = $this->app['files'];
-		$this->artisan('module:make', ['name' => ['Blog']]);
-		$this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
-	}
+        $this->modulePath = base_path('Modules/Blog');
+        $this->finder = $this->app['files'];
+        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
+    }
 
-	/**
-	 * Clean up the testing environment before the next test.
-	 *
-	 * @return void
-	 */
-	public function tearDown()
-	{
-		$this->finder->deleteDirectory($this->modulePath);
-		$this->finder->delete($this->finder->allFiles(base_path('database/migrations')));
+    /**
+     * Clean up the testing environment before the next test.
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        $this->finder->deleteDirectory($this->modulePath);
+        $this->finder->delete($this->finder->allFiles(base_path('database/migrations')));
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/** @test */
-	public function it_publishes_module_migrations()
-	{
-	    $this->artisan('module:publish-migration', ['module' => 'Blog']);
+    /** @test */
+    public function it_publishes_module_migrations()
+    {
+        $this->artisan('module:publish-migration', ['module' => 'Blog']);
 
-	    $files = $this->finder->allFiles(base_path('database/migrations'));
+        $files = $this->finder->allFiles(base_path('database/migrations'));
 
-	    $this->assertCount(1, $files);
-	}
+        $this->assertCount(1, $files);
+    }
 }

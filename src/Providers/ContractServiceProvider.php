@@ -8,13 +8,13 @@ use Rawilk\LaravelModules\Repository;
 
 class ContractServiceProvider extends ServiceProvider
 {
-	/**
-	 * Register any application services.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-		$this->app->bind(RepositoryInterface::class, Repository::class);
-	}
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->bind(RepositoryInterface::class, Repository::class);
+    }
 }
