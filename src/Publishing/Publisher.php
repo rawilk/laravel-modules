@@ -5,7 +5,7 @@ namespace Rawilk\LaravelModules\Publishing;
 use Illuminate\Console\Command;
 use Rawilk\LaravelModules\Contracts\PublisherInterface;
 use Rawilk\LaravelModules\Module;
-use RAwilk\LaravelModules\Repository;
+use Rawilk\LaravelModules\Repository;
 
 abstract class Publisher implements PublisherInterface
 {
