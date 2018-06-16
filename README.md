@@ -8,7 +8,7 @@ This package is a re-published and slightly modified version of [nWidart/laravel
 I mainly created my own version of this package because I wanted full control over how
 modules are managed, and also I have my own needs as for what I need the package to do.
 
-### Install
+## Install
 
 To install the package through composer, run the following command
 
@@ -24,7 +24,7 @@ You can optionally publish the package's configuration file by running:
 php artisan vendor:publish --provider="Rawilk\LaravelModules\LaravelModulesServiceProvider"
 ```
 
-### Autoloading Modules
+## Autoloading Modules
 
 By default the modules are not loaded automatically. You can autoload the modules by using `psr-4` in your `composer.json` file:
 
@@ -41,6 +41,6 @@ By default the modules are not loaded automatically. You can autoload the module
 
 **Tip: Make sure to run `composer dump-autoload` afterwards.**
 
-### License
+## License
 
-MIT
+The MIT License (MIT). Please see the [License file](https://github.com/rawilk/laravel-modules/blob/master/LICENSE) for more information.
