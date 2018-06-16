@@ -46,6 +46,15 @@ By default the modules are not loaded automatically. You can autoload the module
 
 **Tip: Be sure sure to run `composer dump-autoload` afterwards.**
 
+## Documentation
+
+Coming soon
+
+## Credits
+
+- [Randall Wilk](https://github.com/rawilk)
+- [Nicolas Widart](https://github.com/nwidart)
+
 ## License
 
 The MIT License (MIT). Please see the [License file](https://github.com/rawilk/laravel-modules/blob/master/LICENSE) for more information.
