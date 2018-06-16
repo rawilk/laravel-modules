@@ -1,10 +1,10 @@
 <?php return '{
-    "name": "rawilk/blog",
+    "name": "vendor/blog",
     "description": "",
     "authors": [
         {
-            "name": "Randall Wilk",
-            "email": "randall@randallwilk.com"
+            "name": "",
+            "email": ""
         }
     ],
     "extra": {
