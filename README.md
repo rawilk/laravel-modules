@@ -6,7 +6,7 @@ Laravel-Modules is supported and tested in Laravel 5.
 
 This package is a re-published and slightly modified version of [nWidart/laravel-modules](https://github.com/nWidart/laravel-modules).
 I mainly created my own version of this package because I wanted full control over how
-modules are managed, and also I have my own needs as for what I need the package to do.
+modules are managed, and I also have my own needs as for what I need the package to do.
 
 ## Install
 
