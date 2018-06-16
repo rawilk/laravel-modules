@@ -39,7 +39,12 @@ By default the modules are not loaded automatically. You can autoload the module
 }
 ```
 
-**Tip: Make sure to run `composer dump-autoload` afterwards.**
+- If you changed the module namespace in the [config file](https://github.com/rawilk/laravel-modules/blob/master/config/config.php#L12), be sure to change 
+`"Modules\\"` to your new namespace.
+- If you changed the directory where the modules get stored in the [config file](https://github.com/rawilk/laravel-modules/blob/master/config/config.php#L77), be sure to change
+`"Modules/"` to the directory they will be stored in.
+
+**Tip: Be sure sure to run `composer dump-autoload` afterwards.**
 
 ## License
 
