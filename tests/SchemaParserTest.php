@@ -9,14 +9,14 @@ class SchemaParserTest extends BaseTestCase
     /** @test */
     public function it_generates_migration_method_calls()
     {
-        $parser = new SchemaParser('username:string, password:integer');
+	    $parser = new SchemaParser('username:string, password:integer');
 
-        $expected = <<<TEXT
+	    $expected = <<<TEXT
 \t\t\t\$table->string('username');
-\t\t\t\$table->integer('password');\r\n
+\t\t\t\$table->integer('password');\n
 TEXT;
 
-        $this->assertEquals($expected, $parser->render());
+	    $this->assertEquals($expected, $parser->render());
     }
 
     /** @test */
