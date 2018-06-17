@@ -15,6 +15,8 @@ class BaseTestCase extends OrchestraTestCase
     public function setUp()
     {
         parent::setUp();
+
+        $this->app['files']->deleteDirectory(base_path('Modules'));
     }
 
     /**
