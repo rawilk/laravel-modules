@@ -8,4 +8,5 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
+  - rm -rf vendor
   - composer install --no-interaction
