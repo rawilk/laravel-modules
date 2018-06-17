@@ -11,12 +11,12 @@ class SchemaParserTest extends BaseTestCase
     {
 	    $parser = new SchemaParser('username:string, password:integer');
 
-	    $expected = <<<TEXT
+        $expected = <<<TEXT
 \t\t\t\$table->string('username');
-\t\t\t\$table->integer('password');\n
+\t\t\t\$table->integer('password');\r\n
 TEXT;
 
-	    $this->assertEquals($expected, $parser->render());
+        $this->assertEquals($expected, $parser->render());
     }
 
     /** @test */
