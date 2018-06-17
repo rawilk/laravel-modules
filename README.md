@@ -1,5 +1,9 @@
 # Laravel-Modules
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/rawilk/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/rawilk/laravel-modules)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Total Downloads](https://img.shields.io/packagist/dt/rawilk/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/rawilk/laravel-modules)
+
 `rawilk/laravel-modules` is a Laravel package to help build modular apps using modules.
 A module is like a Laravel package; it has some views, controllers and models.
 Laravel-Modules is supported and tested in Laravel 5.
