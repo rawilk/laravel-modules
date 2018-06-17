@@ -37,8 +37,7 @@
   "autoload-dev": {
     "psr-4": {
       "Rawilk\\LaravelModules\\Tests\\": "tests",
-      "Modules\\Recipe\\": "tests/stubs/valid/Recipe",
-      "Modules\\": "Modules/"
+      "Modules\\Recipe\\": "tests/stubs/valid/Recipe"
     }
   },
   "scripts": {
