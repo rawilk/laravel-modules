@@ -10,7 +10,9 @@ Laravel-Modules is supported and tested in Laravel 5.
 
 This package is a re-published and slightly modified version of [nWidart/laravel-modules](https://github.com/nWidart/laravel-modules).
 I mainly created my own version of this package because I wanted full control over how
-modules are managed, and I also have my own needs as for what I need the package to do.
+modules are managed, and I also have my own needs as for what I need the package to do. If you find that
+`nWidart/laravel-modules` fits your needs better than `rawilk/laravel-modules`, by all means use that one.
+My version of the package is **not** meant to be a replacement or competitor to the other package.
 
 ## Install
 
@@ -52,7 +54,7 @@ By default the modules are not loaded automatically. You can autoload the module
 
 ## Documentation
 
-Coming soon
+Further information and instructions can be found at: https://rawilk.github.io/laravel-modules/
 
 ## Credits
 
