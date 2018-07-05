@@ -5,8 +5,6 @@
 
 // Import partials from `sass_dir` (defaults to `_sass`)
 
-
-
 @import
   {% if site.bootwatch %}
     "bootswatch/{{site.bootwatch | downcase}}/variables",
@@ -23,64 +21,186 @@
 ;
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
+
 body {
-  padding-top: $navbar-height + $navbar-margin-bottom;
-  margin-bottom: 46px;
+    padding-top: $navbar-height + $navbar-margin-bottom;
+    margin-bottom: 46px;
 }
 
-.navbar-brand{
-  img{
-    margin: -$navbar-padding-vertical 0;
-    height: $navbar-height;
-    padding: 10px 0;
-  }
+.navbar-brand {
+    img {
+        margin: -$navbar-padding-vertical 0;
+        height: $navbar-height;
+        padding: 10px 0;
+    }
 }
-
 
 .header-container {
-  background-color: black;
-  background: url('../img/bg.jpg') no-repeat 50% 0;
-  color: #fff;
-
-  h1 {
+    background-color: #333;
     color: #fff;
-  }
-  // background-attachment: fixed;
-  background-size: cover;
-  background-position: center 36%;
-  margin-top: -37px;
+
+    h1 {
+        color: #fff;
+    }
+
+    margin-top: -37px;
 }
+
 .navbar-container {
-  font-size: 16px;
+    font-size: 16px;
 }
+
 .page-content {
-  padding-bottom: 20px;
+    padding-bottom: 20px;
 }
+
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 46px;
-  padding-top: 10px;
-  background-color: $gray-lighter;
-  color: $gray-dark;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 46px;
+    padding-top: 10px;
+    background-color: $gray-lighter;
+    color: $gray-dark;
 }
 
 .post-list-container {
-  li a.active {
-    font-weight: bold;
-  }
+    li a.active {
+        font-weight: bold;
+    }
 }
+
 *[id]:before {
-  display: block;
-  content: " ";
-  margin-top: -75px;
-  height: 75px;
-  visibility: hidden;
+    display: block;
+    content: " ";
+    margin-top: -75px;
+    height: 75px;
+    visibility: hidden;
 }
-.navbar-form .has-feedback .form-control-feedback{
-  top:10px
+
+.navbar-form .has-feedback .form-control-feedback {
+    top: 10px
+}
+
+p {
+    line-height: 1.5;
+    margin: 0 0 1em;
+    font-size: 14px;
+}
+
+h4 {
+    font-size: 18px;
+    line-height: 1.1;
+    font-weight: 500;
+}
+
+$success: #75c181;
+
+.doc-menu {
+    list-style: none;
+    padding-left: 0;
+
+    > li {
+        margin-bottom: 5px;
+
+        &.active {
+            > a {
+                background: none;
+                border-left: 4px solid #75c181;
+                color: #75c181;
+                font-weight: 600;
+            }
+        }
+
+        > a {
+            display: block;
+            padding: 5px 15px;
+            border-left: 4px solid transparent;
+            color: #616670;
+        }
+    }
+
+    a {
+        background-color: unset !important;
+
+        &:hover,
+        &:focus {
+            background-color: unset !important;
+            text-decoration: underline !important;
+        }
+    }
+}
+
+.doc-sub-menu {
+    list-style: none;
+    padding-left: 0;
+
+    > li {
+        margin-bottom: 10px;
+        font-size: 12px;
+
+        &:first-child {
+            padding-top: 5px;
+        }
+
+        > a {
+            display: block;
+            color: #616670;
+            padding: 0 0 0 34px;
+            background: none;
+
+            &.active {
+                background: none;
+                color: #75c181;
+            }
+        }
+    }
+}
+
+.alert {
+    padding: 30px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+
+    &.alert-success {
+        background-color: $success;
+        border-color: $success;
+        color: #fff;
+    }
+
+    .alert-content {
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-title {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: rgba(0, 0, 0, 0.65);
+        }
+
+        code {
+            font-size: 11px;
+            line-height: 2;
+            vertical-align: middle;
+            background: #f0f2f1;
+            color: #f4645f;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+    }
+}
+
+.text-bold {
+    font-weight: 700;
+}
+
+.panel.command {
+    pre,
+    code {
+        white-space: normal;
+    }
 }

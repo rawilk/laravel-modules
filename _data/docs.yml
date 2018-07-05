@@ -1,9 +1,29 @@
 - title: Getting Started
+  doc_section_id: docs
   docs:
-  - home
-  - questions
-  - changelog
+    - permalink: installation
+    - permalink: questions
+    - permalink: changelog
 
 - title: Basic Usage
+  prefix: basic-usage/
+  doc_section_id: basic-usage
   docs:
-  - creating-a-module
+    - permalink: creating-a-module
+    - permalink: custom-namespaces
+    - permalink: configuration
+    - permalink: helpers
+    - permalink: compiling-assets
+
+- title: Advanced Usage
+  prefix: advanced-usage/
+  doc_section_id: advanced-usage
+  docs:
+    - permalink: artisan-generator-commands
+    - permalink: artisan-utility-commands
+    - permalink: facade-methods
+    - permalink: module-methods
+    - permalink: publishing-modules
+    - permalink: module-resources
+    - permalink: module-console-commands
+    - permalink: registering-module-events

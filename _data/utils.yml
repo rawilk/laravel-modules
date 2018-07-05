@@ -1,0 +1,101 @@
+- command: disable
+  desc: Disable the specified module.
+  example: 'php artisan module:disable Blog'
+
+- command: enable
+  desc: Enable the specified module.
+  example: 'php artisan module:enable Blog'
+
+- command: list
+  desc: List all available modules.
+  example: 'php artisan module:list'
+
+- command: migrate
+  desc: Run migrations for the specified module. To run migrations for all modules, simply omit the module argument.
+  example: 'php artisan module:migrate Blog'
+  options:
+    - option: '--direction|-d'
+      desc: 'The order to load the modules (only applies when migrating all modules). Valid values are <strong>asc</strong> and <strong>desc</strong>. <strong>Default:</strong> asc'
+    - option: --database=Database
+      desc: The database connection to use.
+    - option: '--pretend|-p'
+      desc: Dump the SQL queries that would be run in the migrations.
+    - option: '--force|-f'
+      desc: Force the migrations to run in production.
+    - option: '--seed|-s'
+      desc: Indicates seeders should be run.
+    - option: --subpath=Subpath
+      desc: Indicate a subpath to run your migrations from.
+
+- command: migrate-refresh
+  desc: Refresh migrations for the specified module. To refresh migrations for all modules, simply omit the module argument.
+  example: 'php artisan module:migrate-refresh Blog'
+  options:
+        - option: --database=Database
+          desc: The database connection to use.
+        - option: '--force|-f'
+          desc: Force the migrations to run in production.
+        - option: '--seed|-s'
+          desc: Indicates seeders should be run.
+
+- command: migrate-reset
+  desc: Reset migrations for the specified module. To reset all module migrations, simply omit the module argument.
+  example: 'php artisan module:migrate-reset Blog'
+  options:
+      - option: '--direction|-d'
+        desc: 'The order to load the modules (only applies when migrating all modules). Valid values are <strong>asc</strong> and <strong>desc</strong>. <strong>Default:</strong> desc'
+      - option: --database=Database
+        desc: The database connection to use.
+      - option: '--pretend|-p'
+        desc: Dump the SQL queries that would be run in the migrations.
+      - option: '--force|-f'
+        desc: Force the migrations to run in production.
+
+- command: migrate-rollback
+  desc: Rollback migrations for the specified module. To rollback all module migrations, simply omit the module argument.
+  example: 'php artisan module:migrate-rollback Blog'
+  options:
+      - option: '--direction|-d'
+        desc: 'The order to load the modules (only applies when migrating all modules). Valid values are <strong>asc</strong> and <strong>desc</strong>. <strong>Default:</strong> desc'
+      - option: --database=Database
+        desc: The database connection to use.
+      - option: '--pretend|-p'
+        desc: Dump the SQL queries that would be run in the migrations.
+      - option: '--force|-f'
+        desc: Force the migrations to run in production.
+
+- command: publish-config
+  desc: Publish the configuration files for the specified module. To publish all module configurations, simply omit the module argument.
+  example: 'php artisan module:publish-config Blog'
+  options:
+    - option: '--force|-f'
+      desc: Force the configuration files to publish.
+
+- command: publish-migration
+  desc: Publish the migration files for the specified module. To publish all module migrations, simply omit the module argument.
+  example: 'php artisan module:publish-migration Blog'
+
+- command: publish-translation
+  desc: Publish the translation files for the specified module. To publish all module translations, simply omit the module argument.
+  example: 'php artisan module:publish-translation Blog'
+
+- command: seed
+  desc: Run database seeds for the specified module. To seed all modules, simply omit the module argument.
+  example: 'php artisan module:seed Blog'
+  options:
+    - option: --class=RootClass
+      desc: The class name of the root seeder.
+    - option: --database=Database
+      desc: The database connection to use use
+
+- command: update
+  desc: Update the specified module.
+  example: 'php artisan module:update Blog'
+
+- command: use
+  desc: Use the specified module. This allows you to not have to specify the module name on other commands that require the module name as an argument.
+  example: 'php artisan module:use Blog'
+
+- command: unuse
+  desc: 'This unsets the module that was set with the <code>module:use</code> command. It takes no arguments.'
+  example: 'php artisan module:unuse'

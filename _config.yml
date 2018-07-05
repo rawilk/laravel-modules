@@ -1,6 +1,7 @@
 # Site settings
 title: Laravel-Modules
 email: wilk.randall@gmail.com
+author: Randall Wilk
 description: >
   laravel-modules documentation
 
@@ -42,4 +43,6 @@ defaults:
 collections:
   docs:
     permalink: /:collection/:path/
-    output: true
+    output: t/rue
+
+emptyArray: []

@@ -1,22 +1,21 @@
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-{% for section in site.data.docs %}
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{forloop.index}}" aria-expanded="false" aria-controls="collapse-{{forloop.index}}">
-          {{ section.title }}
-        </a>
-      </h4>
-    </div>
-    <div id="collapse-{{forloop.index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-      <ul class="list-group">
-        {% for item in section.docs %}
-          {% assign item_url = item | prepend:"/docs/" | append:"/" %}
-          {% assign p = site.docs | where:"url", item_url | first %}
-          <a class="list-group-item {% if item_url == page.url %}active{% endif %}" href="{{ p.url  | prepend: site.baseurl }}">{{ p.title }}</a>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-{% endfor %}
-</div>
+<ul class="nav doc-menu">
+    {% for section in site.data.docs %}
+        <li class="{% if page.doc_section_id == section.doc_section_id %}active{% endif %}">
+            <a>{{ section.title }}</a>
+            <ul class="nav doc-sub-menu">
+                {% for document in section.docs %}
+                    {% assign document_url = document.permalink | prepend: section.prefix | prepend: "/docs/" | append: "/" %}
+                    {% assign item = site.docs | where: "url", document_url | first %}
+
+                    <li>
+                        <a href="{{ item.url | prepend: site.baseurl }}"
+                           class="{% if document_url == page.url %}active{% endif %}"
+                        >
+                            {{ item.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,77 @@
+---
+title: Artisan Generator Commands
+permalink: /docs/advanced-usage/artisan-generator-commands/
+doc_section_id: advanced-usage
+---
+
+<div class="alert alert-success">
+    <div class="alert-content">
+        <h4 class="alert-title">Tip:</h4>
+        <p>
+            You can use <code>--help</code> with any of the following commands to find
+            its arguments and options.
+        </p>
+    </div>
+</div>
+
+<p>
+    <strong>Note:</strong> All of the following commands use "Blog" as an example module name, and example class/file names.
+</p>
+
+<p>
+    <strong>Note:</strong>
+    Many of the generator commands also support nested folder structures. For example, if you wanted to generate
+    a model inside a directory called "PostModel", you could call <code>php artisan module:make-model PostModel/Post Blog</code>.
+    This will generate the model with the correct namespace and place it inside of <code>Modules/Blog/Models/PostModel/Post.php</code>.
+</p>
+
+{% for command in site.data.generators %}
+    <div class="panel panel-primary command">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                module:{{ command.command }}
+            </h4>
+        </div>
+        <div class="panel-body">
+            <p>{{ command.desc }}</p>
+            
+            <div class="language-bash highlighter-rouge">
+                <pre class="highlight">
+                    <code>
+                        {{ command.example }}
+                    </code>
+                </pre>
+            </div>
+            
+            {% if command.addtlDesc %}
+                <p>{{ command.addtlDesc }}</p>
+            {% endif %}
+            
+            {% if command.addtlExample %}
+                <div class="language-bash highlighter-rouge">
+                    <pre class="highlight">
+                        <code>
+                            {{ command.addtlExample }}
+                        </code>
+                    </pre>
+                </div>
+            {% endif %}
+
+            {% if command.options %}
+                <p>Options:</p>
+                <ul>
+                    {% for option in command.options %}
+                        <li>
+                            {% assign option_variations = option.option | split: '|' %}
+                            {% assign variation_size = option_variations | size %}
+                            {% for variation in option_variations %}
+                                <code>{{ variation }}</code>{% if forloop.first %}{% if variation_size > 1 %},{% endif %}{% endif %}
+                            {% endfor %}
+                                : {{ option.desc }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}

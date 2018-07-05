@@ -1,52 +1,53 @@
-{% comment %}
-Map grabs the doc sections, giving us an array of arrays. Join, flattens all
-the items to a comma delimited string. Split turns it into an array again.
-{% endcomment %}
-{% assign docs = site.data.docs | map: 'docs' | join: ',' | split: ',' %}
+{% assign docs = site.data.docs %}
 
 {% comment %}
-Because this is built for every page, lets find where we are in the ordered
-document list by comparing url strings. Then if there's something previous or
-next, lets build a link to it.
+    We need to get the total number of pages there are to determine
+    if we are in the last iteration of each loop later.
 {% endcomment %}
 
-{% for document in docs %}
-  {% assign document_url = document | prepend:"/docs/" | append:"/" %}
-  {% if document_url == page.url %}
-    <ul class="pager">
-      {% if forloop.first %}
-        <li class="previous disabled">
-          <a>
-            <span aria-hidden="true">&larr;</span> Previous
-          </a>
-        </li>
-      {% else %}
-        {% assign previous = forloop.index0 | minus: 1 %}
-        {% assign previous_page = docs[previous] | prepend:"/docs/" | append:"/" %}
-        <li class="previous">
-          <a href="{{ previous_page | prepend: site.baseurl }}">
-            <span aria-hidden="true">&larr;</span> Previous
-          </a>
-        </li>
-      {% endif %}
+{% assign total = 0 %}
+{% assign doc_urls = site.emptyArray %}
 
-      {% if forloop.last %}
-        <li class="next disabled">
-          <a>
-            Next <span aria-hidden="true">&rarr;</span>
-          </a>
-        </li>
-      {% else %}
-        {% assign next = forloop.index0 | plus: 1 %}
-        {% assign next_page = docs[next] | prepend:"/docs/" | append:"/" %}
-        <li class="next">
-          <a href="{{ next_page | prepend: site.baseurl }}">
-            Next <span aria-hidden="true">&rarr;</span>
-          </a>
-        </li>
-      {% endif %}
-    </div>
-    <div class="clear"></div>
-    {% break %}
-  {% endif %}
+{% for section in docs %}
+    {% assign section_size = section.docs | size %}
+    {% assign total = total | plus: section_size %}
+
+    {% for document in section.docs %}
+        {% assign document_url = document.permalink | prepend: section.prefix | prepend: "/docs/" | append: "/" %}
+        {% assign doc_urls = doc_urls | push: document_url %}
+    {% endfor %}
+{% endfor %}
+
+{% assign index = 0 %}
+
+{% for document_url in doc_urls %}
+    {% if document_url == page.url %}
+        <ul class="pager">
+            {% if forloop.index0 > 0 %}
+                {% assign previous = forloop.index0 | minus: 1 %}
+                {% assign previous_url = doc_urls[previous] %}
+                {% assign previous_document = site.docs | where: "url", previous_url | first %}
+
+                <li class="previous">
+                    <a href="{{ previous_url | prepend: site.baseurl }}">
+                        <span aria-hidden="true">&larr;</span>
+                        {{ previous_document.title }}
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if forloop.index < total %}
+                {% assign next = forloop.index0 | plus: 1 %}
+                {% assign next_url = doc_urls[next] %}
+                {% assign next_document = site.docs | where: "url", next_url | first %}
+
+                <li class="next">
+                    <a href="{{ next_url | prepend: site.baseurl }}">
+                        {{ next_document.title }}
+                        <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
 {% endfor %}

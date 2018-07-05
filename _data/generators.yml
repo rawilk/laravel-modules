@@ -1,0 +1,134 @@
+- command: make
+  desc: Generate a new module
+  example: 'php artisan module:make Blog'
+  addtlDesc: To generate multiple modules at once, you can pass them in as additional arguments.
+  addtlExample: 'php artisan module:make Blog User Auth'
+
+- command: make-command
+  desc: Generate a console command for the specified module.
+  example: 'php artisan module:make-command CreatePostCommand Blog'
+  options:
+    - option: --signature=command-signature
+      desc: This will be the name of the terminal command.
+    - option: --argument=argument
+      desc: This will add an argument to the command signature. This can be called multiple times for multiple arguments.
+    - option: --option=option
+      desc: This will add an option to the command signature. This can be called multiple times for multiple options.
+    - option: --description=description
+      desc: This will set the command description.
+
+
+- command: make-controller
+  desc: Generate a new controller for the specified module.
+  example: 'php artisan module:make-controller PostsController Blog'
+  options:
+    - option: '--plain|-p'
+      desc: This will generate a plain controller.
+    - option: --base_class=CustomBaseClass
+      desc: Override the base class the generated controller will extend.
+
+- command: make-event
+  desc: Generate an event for the specified module.
+  example: 'php artisan module:make-event BlogPostWasUpdated Blog'
+  options:
+    - option: '--plain|-p'
+      desc: Create a plain event class.
+
+- command: make-factory
+  desc: Generate a database factory for the specified module.
+  example: 'php artisan module:make-factory PostFactory Blog'
+  options:
+    - option: --model=ModelName
+      desc: The name of the model the factory is for.
+
+- command: make-job
+  desc: Generate a job for the specified module.
+  example: 'php artisan module:make-job DeleteExpiredPosts Blog'
+  options:
+    - option: '--sync|-s'
+      desc: Indicates the job should by synchronus.
+
+- command: make-listener
+  desc: Generate an event listener for the specified module. Optionally you can specify which event class it should listen to.
+  example: 'php artisan module:make-listener NotifyUsersOfANewPost Blog'
+  options:
+    - option: '--event|-e'
+      desc: The event class being listened for.
+    - option: --queued
+      desc: Indicates the event listener should be queued.
+
+- command: make-mail
+  desc: Generate a mailable for the specified module.
+  example: 'php artisan module:make-mail SendWeeklyPostsEmail Blog'
+  options:
+    - option: --base_class=CustomBaseClass
+      desc: Override the base class the generated mailable will extend.
+
+- command: make-middleware
+  desc: Generate a middleware class for the specified module.
+  example: 'php artisan module:make-middleware CanReadPostsMiddleware Blog'
+  options:
+
+- command: make-migration
+  desc: Generate a database migration for the specified module.
+  example: 'php artisan module:make-mail create_posts_table Blog'
+  options:
+    - option: --fields=username:string,password:string
+      desc: The fields to migrate.
+
+- command: make-model
+  desc: Generate an Eloquent model for the specified module.
+  example: 'php artisan module:make-model Post Blog'
+  options:
+    - option: --base_class=CustomBaseClass
+      desc: Override the base class the generated mailable will extend.
+    - option: --fillable=field1,field2
+      desc: Set the fillable fields on the generated model
+    - option: '--migration|-m'
+      desc: Create a migration file for the generated model
+    - option: --table=table_name
+      desc: Set the name of the generated model's database table.
+
+- command: make-policy
+  desc: Generate a policy class for the specified module.
+  example: 'php artisan module:make-policy PostPolicy Blog'
+
+- command: make-provider
+  desc: Generate a service provider for the specified module.
+  example: 'php artisan module:make-provider BlogServiceProvider Blog'
+  options:
+    - option: '--master|-m'
+      desc: Indicates the provider is a master service provider.
+
+- command: make-request
+  desc: Generate a new form request class for the specified module.
+  example: 'php artisan module:make-request CreatePostRequest Blog'
+  options:
+    - option: --base_class=CustomBaseClass
+      desc: Override the base class the generated request will extend.
+
+- command: make-resource
+  desc: Generate a resource class for the specified module.
+  example: 'php artisan module:make-resource PostResource Blog'
+  options:
+    - option: '--collection|-c'
+      desc: Create a resource collection class.
+
+- command: make-rule
+  desc: Generate a new validation rule class for the specified module.
+  example: 'php artisan module:make-rule CustomValidationRule Blog'
+
+- command: make-seed
+  desc: Generate a database seeder for the specified module.
+  example: 'php artisan module:make-seed seed_blog_posts Blog'
+  options:
+    - option: '--master|-m'
+      desc: Indicates the seeder is a master database seeder
+
+- command: make-test
+  desc: Generate a test for the specified module.
+  example: 'php artisan module:make-test PostTest Blog'
+
+- command: route-provider
+  desc: Generate a new route service provider for the specified module.
+  example: 'php artisan module:route-provider Blog'
