@@ -43,6 +43,6 @@ defaults:
 collections:
   docs:
     permalink: /:collection/:path/
-    output: t/rue
+    output: true
 
 emptyArray: []
