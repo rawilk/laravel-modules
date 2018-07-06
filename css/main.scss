@@ -211,7 +211,10 @@ $doc-color: #616670;
     }
 }
 
-pre.highlight {
-    border: 0;
-    padding: 0;
+div.highlight {
+    pre.highlight {
+        border: 0;
+        padding: 0;
+        margin-bottom: 0;
+    }
 }
