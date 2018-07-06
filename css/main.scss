@@ -98,6 +98,8 @@ h4 {
 }
 
 $success: #75c181;
+$primary: #2196f3;
+$doc-color: #616670;
 
 .doc-menu {
     list-style: none;
@@ -109,17 +111,21 @@ $success: #75c181;
         &.active {
             > a {
                 background: none;
-                border-left: 4px solid #75c181;
-                color: #75c181;
+                border-left: 4px solid $primary;
+                color: $primary;
                 font-weight: 600;
             }
         }
 
         > a {
+            &:hover {
+                text-decoration: none;
+            }
+
             display: block;
             padding: 5px 15px;
             border-left: 4px solid transparent;
-            color: #616670;
+            color: $doc-color;
         }
     }
 
@@ -148,13 +154,13 @@ $success: #75c181;
 
         > a {
             display: block;
-            color: #616670;
+            color: $doc-color;
             padding: 0 0 0 34px;
             background: none;
 
             &.active {
                 background: none;
-                color: #75c181;
+                color: $primary;
             }
         }
     }
