@@ -12,7 +12,7 @@ Here are some examples of its usage:
 
 ### Lang Namespace
 
-```php
+```php?start_inline=true?start_inline=true
 Lang::get('blog::group.name');
 
 @trans('blog::group.name');
@@ -20,7 +20,7 @@ Lang::get('blog::group.name');
 
 ### View Namespace
 
-```php
+```php?start_inline=true?start_inline=true
 view('blog::index');
 
 view('blog::partials.sidebar');
@@ -28,6 +28,6 @@ view('blog::partials.sidebar');
 
 ### Config Namespace
 
-```php
+```php?start_inline=true?start_inline=true
 config('blog.name');
 ```

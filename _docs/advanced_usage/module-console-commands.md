@@ -18,7 +18,7 @@ in the path: `Modules/Blog/Console/CreatePostCommand`.
 
 You cna register the command with the laravel method `commands` which is available inside a service provider class.
 
-```php
+```php?start_inline=true
 // In your boot or register method in the service provider:
 
 public function boot()

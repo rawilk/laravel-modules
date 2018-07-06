@@ -34,7 +34,7 @@ Laravel know about them as in any regular package.
 To load and publish your module's configuration you need to add the following to your module's service provider.
 If you don't want to publish the configuration, you can skip the `$this->publishes()` method call.
 
-```php
+```php?start_inline=true
 $this->publishes([
     __DIR__ . '../../config/config.php' => config_path('blog.php')
 ], 'config');
@@ -47,7 +47,7 @@ $this->mergeConfigFrom(
 
 ### Views
 
-```php
+```php?start_inline=true
 $viewPath = base_path('resources/views/modules/blog');
 
 $sourcePath = __DIR__ . '../resources/views');
@@ -68,7 +68,7 @@ to the Laravel views folder, you can remove the `$this->publishes()` call.
 
 If you want to use language files in the module, you need to add the following to your service provider.
 
-```php
+```php?start_inline=true
 $langPath = base_path('resources/lang/modules/blog');
 
 if (is_dir($langPath)) {
@@ -82,7 +82,7 @@ if (is_dir($langPath)) {
 
 If you want to use Laravel factories you will need the following in your service provider.
 
-```php
+```php?start_inline=true
 $this->app->singleton(Factory::class, function () {
     return Factory::construct(__DIR__ . '/database/factories');
 });

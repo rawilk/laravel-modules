@@ -61,7 +61,7 @@ the EventServiceProvider class.
 This is now like the regular EventServiceProvider in the `app/` namespace. Based off the example above,
 the `listen` property of the class will now look like this:
 
-```php
+```php?start_inline=true
 // ...
 class EventServiceProvider extends ServiceProvider
 {

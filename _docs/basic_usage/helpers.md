@@ -8,6 +8,6 @@ doc_section_id: basic-usage
 
 This function retrieves the path to the given module.
 
-```php
+```php?start_inline=true
 $path = module_path('Blog');
 ```

@@ -7,60 +7,60 @@ doc_section_id: advanced-usage
 Similar to the `Module` facade, there are many methods available to use on a module instance.
 To find a module, you need to use the facade to find it first:
 
-```php
+```php?start_inline=true
 $module = Module::find('blog');
 ```
 
 Get the module's name:
 
-```php
+```php?start_inline=true
 $module->getName();
 ```
 
 Get the module's name in lowercase:
 
-```php
+```php?start_inline=true
 $module->getLowerName();
 ```
 
 Get the module's name in studly case:
 
-```php
+```php?start_inline=true
 $module->getStudlyName();
 ```
 
 Get the module's path:
 
-```php
+```php?start_inline=true
 $module->getPath();
 ```
 
 Get an extra path, such as an asset path:
 
-```php
+```php?start_inline=true
 $module->getExtraPath('assets');
 ```
 
 Disable the module:
 
-```php
+```php?start_inline=true
 $module->disable();
 ```
 
 Enable the module:
 
-```php
+```php?start_inline=true
 $module->enable();
 ```
 
 Delete the module:
 
-```php
+```php?start_inline=true
 $module->delete();
 ```
 
 Get an array of the module's requirements:
 
-```php
+```php?start_inline=true
 $module->getRequires();
 ```
