@@ -2,7 +2,7 @@
 title: Installation and Setup
 permalink: /docs/installation/
 doc_section_id: docs
-excerpt: laravel-modules installation and setup instructions.
+excerpt: Laravel-Modules installation and setup instructions.
 ---
 
 ## Composer

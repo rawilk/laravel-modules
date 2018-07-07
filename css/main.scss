@@ -101,6 +101,44 @@ h4 {
     margin-bottom: 15px;
 }
 
+.gh-repo {
+    font-size: 20px;
+}
+
+$dark-color: #494d55;
+
+.doc-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+        margin-top: 0;
+        margin-bottom: 5px;
+        line-height: 1.5;
+    }
+}
+
+.edit-on-gh {
+    background-color: $dark-color;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    padding: 3px 10px;
+    line-height: 2;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    i {
+        margin-left: 3px;
+    }
+}
+
 $success: #75c181;
 $primary: #2196f3;
 $doc-color: #616670;
