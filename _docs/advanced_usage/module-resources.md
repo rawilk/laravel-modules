@@ -2,6 +2,7 @@
 title: Module Resources
 permalink: /docs/advanced-usage/module-resources/
 doc_section_id: advanced-usage
+excerpt: Learn how to register and publish various resources from your modules.
 ---
 
 Your modules will most likely contain various resources such as configuration, views, translation files, etc.

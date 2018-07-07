@@ -2,6 +2,7 @@
 title: Creating a Module
 permalink: /docs/basic-usage/creating-a-module/
 doc_section_id: basic-usage
+excerpt: Learn more about creating a module with laravel-modules.
 ---
 
 Creating a module is simple and straightforward. Run the following command to create a module.

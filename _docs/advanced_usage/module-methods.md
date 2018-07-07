@@ -2,6 +2,7 @@
 title: Module Methods
 permalink: /docs/advanced-usage/module-methods/
 doc_section_id: advanced-usage
+excerpt: Learn about the methods available to a single module instance.
 ---
 
 Similar to the `Module` facade, there are many methods available to use on a module instance.

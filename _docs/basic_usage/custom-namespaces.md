@@ -2,6 +2,7 @@
 title: Custom Namespaces
 permalink: /docs/basic-usage/custom-namespaces/
 doc_section_id: basic-usage
+excerpt: Learn more about how laravel-modules creates namespaces for your module's resources.
 ---
 
 When a new module is generated it also registers new custom namespaces for `Lang`, `View`, and `Config`.

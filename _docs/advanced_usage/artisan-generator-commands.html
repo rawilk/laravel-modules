@@ -2,6 +2,7 @@
 title: Artisan Generator Commands
 permalink: /docs/advanced-usage/artisan-generator-commands/
 doc_section_id: advanced-usage
+excerpt: Artisan console commands available from laravel-modules that generate files.
 ---
 
 <div class="alert alert-success">
@@ -34,7 +35,7 @@ doc_section_id: advanced-usage
         </div>
         <div class="panel-body">
             <p>{{ command.desc }}</p>
-            
+
             <div class="language-bash highlighter-rouge">
                 <pre class="highlight">
                     <code>
@@ -42,11 +43,11 @@ doc_section_id: advanced-usage
                     </code>
                 </pre>
             </div>
-            
+
             {% if command.addtlDesc %}
                 <p>{{ command.addtlDesc }}</p>
             {% endif %}
-            
+
             {% if command.addtlExample %}
                 <div class="language-bash highlighter-rouge">
                     <pre class="highlight">

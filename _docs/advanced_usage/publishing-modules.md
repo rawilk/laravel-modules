@@ -2,6 +2,7 @@
 title: Publishing Modules
 permalink: /docs/advanced-usage/publishing-modules/
 doc_section_id: advanced-usage
+excerpt: Learn how to create and publish a module using laravel-modules.
 ---
 
 After creating a module, you may want to make the module available to other developers. You can push

@@ -2,6 +2,7 @@
 title: Registering Module Events
 permalink: /docs/advanced-usage/registering-module-events/
 doc_section_id: advanced-usage
+excerpt: Learn how to register Laravel events and listeners from each of your modules.
 ---
 
 A module may contain events and event listeners. You can create these classes manually, or with

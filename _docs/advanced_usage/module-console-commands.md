@@ -2,6 +2,7 @@
 title: Module Console Commands
 permalink: /docs/advanced-usage/module-console-commands/
 doc_section_id: advanced-usage
+excerpt: Learn how to register console commands from your modules.
 ---
 
 A module may contain custom console commands. You can generate these commands manually, or with the

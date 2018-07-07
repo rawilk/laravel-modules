@@ -2,6 +2,7 @@
 title: Helpers
 permalink: /docs/basic-usage/helpers/
 doc_section_id: basic-usage
+excerpt: Learn more about the helper functions made available from laravel-modules.
 ---
 
 ### module_path

@@ -2,6 +2,7 @@
 title: Facade Methods
 permalink: /docs/advanced-usage/facade-methods/
 doc_section_id: advanced-usage
+excerpt: Facade methods made available by laravel-modules to manage your modules.
 ---
 
 There are many methods available for you to use to manage modules from the **Module** facade.

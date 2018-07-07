@@ -2,6 +2,7 @@
 title: Configuration
 permalink: /docs/basic-usage/configuration/
 doc_section_id: basic-usage
+excerpt: Learn more about each of the configuration options available for laravel-modules.
 ---
 
 If you need to override certain `laravel-modules` default configurations, you can publish the package configuration

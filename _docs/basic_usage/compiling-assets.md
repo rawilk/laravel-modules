@@ -2,6 +2,7 @@
 title: Compiling Assets
 permalink: /docs/basic-usage/compiling-assets/
 doc_section_id: basic-usage
+excerpt: Learn how to compile and use CSS and JavaScript assets from your modules.
 ---
 
 ## Installation & Setup
