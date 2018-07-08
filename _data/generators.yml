@@ -100,6 +100,19 @@
     - option: '--master|-m'
       desc: Indicates the provider is a master service provider.
 
+- command: make-repository
+  desc: 'Generate a new repository for the specified module.<br><br><strong>Note:</strong> This is a very opinionated generator. The generator and the options it accepts are based primarily off of the repositories I use in my own projects.'
+  example: 'php artisan module:make-repository PostRepository Blog --model Modules/Blog/Models/Post'
+  options:
+    - option: --base_class=CustomBaseClass
+      desc: Override the default repository class.
+    - option: --model=Path/To/Model
+      desc: The model the repository is for. Give the full path (namespace) to the model.
+    - option: --not_found_message="Your not found message"
+      desc: The 404 message to output for exceptions that get thrown from the base repository.
+    - option: '--plain|-p'
+      desc: Generate a plain repository.
+
 - command: make-request
   desc: Generate a new form request class for the specified module.
   example: 'php artisan module:make-request CreatePostRequest Blog'
