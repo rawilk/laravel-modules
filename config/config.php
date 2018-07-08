@@ -62,6 +62,7 @@ return [
         'mail'       => 'Illuminate\Mail\Mailable',
         'model'      => 'Illuminate\Database\Eloquent\Model',
         'request'    => 'Illuminate\Foundation\Http\FormRequest',
+        'repository' => 'BaseRepository'
     ],
 
     'paths' => [

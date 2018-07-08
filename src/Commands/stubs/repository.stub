@@ -1,0 +1,19 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use $BASE_CLASS$;
+use $MODEL_NAMESPACE$;
+
+class $CLASS$ extends $BASE_CLASS_SHORT$
+{
+    /**
+     * Define the Eloquent model to query.
+     *
+     * @return string
+     */
+     public function model()
+     {
+        return $MODEL$;
+     }
+}

@@ -16,6 +16,7 @@ use Rawilk\LaravelModules\Commands\Generators\ModelMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\ModuleMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\PolicyMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\ProviderMakeCommand;
+use Rawilk\LaravelModules\Commands\Generators\RepositoryMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\RequestMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\ResourceMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\RouteProviderMakeCommand;
@@ -70,6 +71,7 @@ class ConsoleServiceProvider extends ServiceProvider
         ModelMakeCommand::class,
         PolicyMakeCommand::class,
         ProviderMakeCommand::class,
+        RepositoryMakeCommand::class,
         RequestMakeCommand::class,
         ResourceMakeCommand::class,
         RouteProviderMakeCommand::class,
