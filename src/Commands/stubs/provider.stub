@@ -28,7 +28,7 @@ class $CLASS$ extends ServiceProvider
       *
       * @return void
       */
-     public function bootstrap()
+     public function boot()
      {
         //
      }
