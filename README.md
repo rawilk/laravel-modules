@@ -1,6 +1,7 @@
 # Laravel-Modules
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rawilk/laravel-modules.svg?style=for-the-badge)](https://packagist.org/packages/rawilk/laravel-modules)
+[![GitHub issues](https://img.shields.io/github/issues/rawilk/laravel-modules.svg?style=for-the-badge)](https://github.com/rawilk/laravel-modules/issues)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
 [![Total Downloads](https://img.shields.io/packagist/dt/rawilk/laravel-modules.svg?style=for-the-badge)](https://packagist.org/packages/rawilk/laravel-modules)
 
