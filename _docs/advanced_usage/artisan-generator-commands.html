@@ -29,7 +29,7 @@ excerpt: Artisan console commands available from laravel-modules that generate f
 {% for command in site.data.generators %}
     <div class="panel panel-primary command">
         <div class="panel-heading">
-            <h4 class="panel-title">
+            <h4 class="panel-title" id="{{ command.command }}">
                 module:{{ command.command }}
             </h4>
         </div>
