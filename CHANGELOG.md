@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2 (July 8, 2018)
+### Added
+- Repository Make Command
+
+### Updated
+- Laravel-Modules config to allow definition of a base repository class
+
 ## 0.1.1 (July 7, 2018)
 ### Fixed
 - Fixed a typo in the provider stub
