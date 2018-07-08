@@ -2,7 +2,7 @@
 
 ## 0.2 (July 8, 2018)
 ### Added
-- Repository Make Command
+- [Repository Make Command](https://rawilk.github.io/laravel-modules/docs/advanced-usage/artisan-generator-commands/#make-repository)
 
 ### Updated
 - Laravel-Modules config to allow definition of a base repository class
