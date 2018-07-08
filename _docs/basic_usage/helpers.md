@@ -5,7 +5,7 @@ doc_section_id: basic-usage
 excerpt: Learn more about the helper functions made available from laravel-modules.
 ---
 
-### module_path
+### `module_path`
 
 This function retrieves the path to the given module.
 

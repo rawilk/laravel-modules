@@ -44,7 +44,14 @@ npm run watch
 npm run production
 ```
 
-**Tip:** Make sure you are in the directory of the module you are compiling assets for.
+<div class="alert alert-success">
+    <div class="alert-content">
+        <h4 class="alert-title">Tip:</h4>
+        <p>
+            Make sure you are in the directory of the module you are compiling assets for.
+        </p>
+    </div>
+</div>
 
 If you version your files with mix, you can still reference Laravel's global mix function within
 your module's views to load the appropriately hashed asset. The mix function will automatically determine
@@ -58,10 +65,16 @@ the current name of the hashed file.
 <script src="{!! mix('js/blog.js') !!}"></script>
 ```
 
-For more information on Laravel Mix you can view the documentation here: https://laravel.com/docs/mix
+For more information on Laravel Mix you can view the documentation here: [https://laravel.com/docs/mix](https://laravel.com/docs/mix)
 
-> Note: To prevent the main Laravel Mix configuration from overwriting the `public/mix-manifest.json` file,
-> ensure you do the following in your modules.
+<div class="alert alert-success">
+    <div class="alert-content">
+        <p>
+            To prevent the main Laravel Mix configuration from overwriting the <code>public/mix-manifest.json</code>
+            file, ensure you do the following in your modules:
+        </p>
+    </div>
+</div>
 
 ```bash
 npm install laravel-mix-merge-manifest --save-dev
