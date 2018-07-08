@@ -117,16 +117,4 @@ class ConsoleServiceProvider extends ServiceProvider
             $this->commands($this->generatorCommands);
         }
     }
-
-    /**
-     * Register any application services.
-     *
-     * @return array
-     */
-    public function register()
-    {
-        $provides = $this->generatorCommands;
-
-        return $provides;
-    }
 }
