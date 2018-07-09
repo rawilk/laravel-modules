@@ -4,6 +4,7 @@
 [![Build Status](https://img.shields.io/travis/rawilk/laravel-modules/master.svg?style=for-the-badge)](https://travis-ci.org/rawilk/laravel-modules)
 [![GitHub issues](https://img.shields.io/github/issues/rawilk/laravel-modules.svg?style=for-the-badge)](https://github.com/rawilk/laravel-modules/issues)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
+[![Quality Score](https://img.shields.io/scrutinizer/g/rawilk/laravel-modules.svg?style=for-the-badge)](https://scrutinizer-ci.com/g/rawilk/laravel-modules)
 [![Total Downloads](https://img.shields.io/packagist/dt/rawilk/laravel-modules.svg?style=for-the-badge)](https://packagist.org/packages/rawilk/laravel-modules)
 
 `rawilk/laravel-modules` is a Laravel package to help build modular apps using modules.
