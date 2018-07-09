@@ -61,7 +61,7 @@ class BaseTestCase extends OrchestraTestCase
         $app['config']->set('modules.paths.modules', base_path('Modules'));
 
         $app['config']->set('modules.paths', [
-            'modules'   => base_path('modules'),
+            'modules'   => base_path('Modules'),
             'assets'    => public_path('modules'),
             'migration' => base_path('database/migrations'),
             'generator' => [
@@ -74,7 +74,7 @@ class BaseTestCase extends OrchestraTestCase
                 'factory'       => ['path' => 'database/factories', 'generate' => true],
                 'model'         => ['path' => 'Models', 'generate' => true],
                 'repository'    => ['path' => 'Repositories', 'generate' => true],
-                'seeder'        => ['path' => 'database/seeders', 'generate' => true],
+                'seeder'        => ['path' => 'database/seeds', 'generate' => true],
                 'controller'    => ['path' => 'Http/Controllers', 'generate' => true],
                 'filter'        => ['path' => 'Http/Middleware', 'generate' => true],
                 'request'       => ['path' => 'Http/Requests', 'generate' => true],

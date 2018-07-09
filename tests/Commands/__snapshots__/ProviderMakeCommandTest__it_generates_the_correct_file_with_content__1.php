@@ -28,7 +28,7 @@ class MyBlogServiceProvider extends ServiceProvider
       *
       * @return void
       */
-     public function bootstrap()
+     public function boot()
      {
         //
      }
