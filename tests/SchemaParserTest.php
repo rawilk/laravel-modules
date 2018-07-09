@@ -13,7 +13,7 @@ class SchemaParserTest extends BaseTestCase
 
         $expected = <<<TEXT
 \t\t\t\$table->string('username');
-\t\t\t\$table->integer('password');\r\n
+\t\t\t\$table->integer('password');\n
 TEXT;
 
         $this->assertEquals($expected, $parser->render());
@@ -26,7 +26,7 @@ TEXT;
 
         $expected = <<<TEXT
 \t\t\t\$table->string('username');
-\t\t\t\$table->integer('password');\r\n
+\t\t\t\$table->integer('password');\n
 TEXT;
 
         $this->assertEquals($expected, $parser->up());
@@ -39,7 +39,7 @@ TEXT;
 
         $expected = <<<TEXT
 \t\t\t\$table->dropColumn('username');
-\t\t\t\$table->dropColumn('password');\r\n
+\t\t\t\$table->dropColumn('password');\n
 TEXT;
 
         $this->assertEquals($expected, $parser->down());
