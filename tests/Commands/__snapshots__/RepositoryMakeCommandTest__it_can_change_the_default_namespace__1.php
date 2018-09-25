@@ -14,7 +14,7 @@ class MyRepository extends BaseRepository
      */
      public function model()
      {
-        return Model::class;
+         return Model::class;
      }
 }
 ';
