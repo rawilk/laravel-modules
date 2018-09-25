@@ -271,6 +271,47 @@ abstract class Repository implements RepositoryInterface, Countable
     }
 
     /**
+     * Retrieve a sorted list of view partials to render for the given module.
+     *
+     * @param string $moduleKey
+     * @return array
+     */
+    public function getViewPartials($moduleKey) : array
+    {
+        $modules = $this->getOrdered();
+
+        $viewPartials = [];
+
+        foreach ($modules as $module) {
+            $path = $module->getExtraPath('config') . '/module-views.php';
+
+            if (! $this->app['files']->exists($path)) {
+                continue;
+            }
+
+            $moduleViews = $this->app['files']->getRequire($path);
+            $moduleViews = array_get($moduleViews, $moduleKey, []);
+
+            if (! empty($moduleViews)) {
+                $viewPartials = array_merge($viewPartials, $moduleViews);
+            }
+        }
+
+        uasort($viewPartials, function ($a, $b) {
+            $aPriority = $a['priority'] ?? 0;
+            $bPriority = $b['priority'] ?? 0;
+
+            if ($aPriority == $bPriority) {
+                return 0;
+            }
+
+            return $aPriority > $bPriority ? 1 : -1;
+        });
+
+        return $viewPartials;
+    }
+
+    /**
      * Get the module path.
      *
      * @return string

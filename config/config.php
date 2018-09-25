@@ -23,12 +23,13 @@ return [
         'enabled' => false,
         'path'    => base_path() . '/vendor/rawilk/laravel-modules/src/Commands/stubs',
         'files'   => [
-            'start'           => 'start.php',
-            'routes'          => 'routes/web.php',
-            'scaffold/config' => 'config/config.php',
-            'composer'        => 'composer.json',
-            'webpack'         => 'webpack.mix.js',
-            'package'         => 'package.json'
+            'start'                 => 'start.php',
+            'routes'                => 'routes/web.php',
+            'scaffold/config'       => 'config/config.php',
+            'scaffold/module-views' => 'config/module-views.php',
+            'composer'              => 'composer.json',
+            'webpack'               => 'webpack.mix.js',
+            'package'               => 'package.json'
         ],
         'replacements' => [
             'start'           => ['LOWER_NAME', 'ROUTES_LOCATION'],
