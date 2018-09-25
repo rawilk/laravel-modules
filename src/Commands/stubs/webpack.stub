@@ -3,9 +3,26 @@ require('laravel-mix-merge-manifest');
 
 mix.setPublicPath('../../public').mergeManifest();
 
+const RESOURCE_ROOT = __dirname + '/resources/assets/';
+
 mix
-	.js(__dirname + '/resources/assets/js/app.js', 'js/$LOWER_NAME$.js');
+    //-------- Add your module assets here
+
+    //-------- Module assets -- do not remove or add anything past here
+    .js(RESOURCE_ROOT + 'js/module/$LOWER_NAME$.js', 'js/modules/$LOWER_NAME$')
+    .js(RESOURCE_ROOT + 'js/module/app.js', 'js/modules/$LOWER_NAME$');
 
 if (mix.inProduction()) {
 	mix.version();
+} else {
+    mix.sourceMaps();
 }
+
+mix.webpackConfig({
+    resolve: {
+        extensions: ['.js', '.json', '.vue'],
+        alias: {
+            '~': path.join(__dirname, '../../resources/assets/js')
+        }
+    }
+});
