@@ -13,7 +13,6 @@ class PostPolicy
      */
     public function __construct()
     {
-        //
     }
 }
 ';

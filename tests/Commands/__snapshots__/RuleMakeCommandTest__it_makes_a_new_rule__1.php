@@ -11,7 +11,6 @@ class UniqueRule implements Rule
      */
      public function __construct()
      {
-        //
      }
 
      /**
@@ -23,7 +22,6 @@ class UniqueRule implements Rule
       */
      public function passes($attribute, $value)
      {
-        //
      }
 
      /**
@@ -33,7 +31,7 @@ class UniqueRule implements Rule
       */
      public function message()
      {
-        return \'The validation error message\';
+         return \'The validation error message\';
      }
 }
 ';

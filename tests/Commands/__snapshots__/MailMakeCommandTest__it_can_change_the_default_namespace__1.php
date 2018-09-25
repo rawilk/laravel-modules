@@ -16,7 +16,6 @@ class SomeMail extends Mailable
      */
     public function __construct()
     {
-        //
     }
 
     /**

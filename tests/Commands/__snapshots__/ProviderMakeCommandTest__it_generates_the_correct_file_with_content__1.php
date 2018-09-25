@@ -20,7 +20,6 @@ class MyBlogServiceProvider extends ServiceProvider
       */
      public function register()
      {
-        //
      }
 
      /**
@@ -30,7 +29,6 @@ class MyBlogServiceProvider extends ServiceProvider
       */
      public function boot()
      {
-        //
      }
 }
 ';
