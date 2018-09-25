@@ -201,7 +201,7 @@ abstract class Module extends ServiceProvider
      * Get json contents from the cache, setting as needed.
      *
      * @param string $file
-     * @return Json
+     * @return Json|callable
      */
     public function json($file = null) : Json
     {
@@ -335,7 +335,7 @@ abstract class Module extends ServiceProvider
      * Set active state for current module.
      *
      * @param int $active
-     * @return bool
+     * @return int
      */
     public function setActive($active)
     {
