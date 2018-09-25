@@ -14,8 +14,8 @@ class $NAME$ extends Seeder
      */
      public function run()
      {
-        Model::unguard();
+         Model::unguard();
 
-        // $this->call('OtherTableSeeder');
+         // $this->call('OtherTableSeeder');
      }
 }

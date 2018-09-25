@@ -13,7 +13,7 @@ class $CLASS$ extends $BASE_CLASS_SHORT$
      */
      public function authorize()
      {
-        return true;
+         return true;
      }
 
     /**
@@ -23,8 +23,6 @@ class $CLASS$ extends $BASE_CLASS_SHORT$
      */
      public function rules()
      {
-        return [
-            //
-        ];
+         return [];
      }
 }

@@ -20,7 +20,6 @@ class $CLASS$ extends ServiceProvider
       */
      public function register()
      {
-        //
      }
 
      /**
@@ -30,6 +29,5 @@ class $CLASS$ extends ServiceProvider
       */
      public function boot()
      {
-        //
      }
 }
