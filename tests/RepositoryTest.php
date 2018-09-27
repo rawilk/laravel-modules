@@ -91,6 +91,28 @@ class RepositoryTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_finds_all_registered_module_views()
+    {
+    	$this->repository->addLocation(__DIR__ . '/stubs/valid');
+
+        $partials = $this->repository->getViewPartials('blog');
+
+        $this->assertCount(2, $partials);
+    }
+
+    /** @test */
+    public function it_gets_registered_module_views_sorted_by_priority()
+    {
+	    $this->repository->addLocation(__DIR__ . '/stubs/valid');
+
+	    $partials = $this->repository->getViewPartials('blog');
+	    $view0 = array_pop($partials);
+
+	    $this->assertEquals('recipe::view.name.2', $view0['view']);
+	    $this->assertEquals(1, $view0['priority']);
+    }
+
+    /** @test */
     public function it_throws_an_exception_if_module_is_not_found_with_find_or_fail()
     {
         $this->expectException(ModuleNotFoundException::class);
