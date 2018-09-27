@@ -88,3 +88,35 @@ $this->app->singleton(Factory::class, function () {
     return Factory::construct(__DIR__ . '/database/factories');
 });
 ```
+
+### Module Views
+
+Sometimes it can be useful to include partials from other modules on a page. This is possible by registering the
+partials in the module and by calling `Module::getViewPartials('blog')` to retrieve all of the registered
+partials for that key.
+
+All view partials should be registered in the `module-views.php` file which can be found in the config directory
+in each module. For example, if you have a page in the blog module that can be extended by other modules, you
+could do something like this in your other modules' `module-views.php` files:
+
+```php?start_inline=true
+return [
+    'blog' => [
+        'settings-page' => [
+            'priority' => 1,
+            'view'     => 'module_name::view.name'
+        ]
+    ]
+];
+```
+
+To retrieve all registered partials for the `settings-page`, you would call `Module::getViewPartials('blog.settings-page')`.
+The partials will be sorted by priority in order from lowest to highest. You can add other array keys you might need,
+but be sure to always include `priority` for sorting purposes. To include these partials in a view, you would need
+to something like this:
+
+```php?start_inline=true
+@foreach ($partials as $partial)
+    @include($partial['view'])
+@endforeach
+```
