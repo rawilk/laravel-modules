@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 (September 27, 2018)
+### Added
+- `module-views.php` in module config directory
+- Method to retrieve view partials from other modules
+
+### Fixed
+- Broken tests
+
 ## 0.2 (July 8, 2018)
 ### Added
 - [Repository Make Command](https://rawilk.github.io/laravel-modules/docs/advanced-usage/artisan-generator-commands/#make-repository)
