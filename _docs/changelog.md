@@ -6,6 +6,21 @@ excerpt: Laravel-Modules changelog. Any notable changes to laravel-modules will 
 ---
 
 <div class="version">
+    <h4 class="version-title" id="ver-0.2.1">0.2.1 (September 27, 2018)</h4>
+    
+    <h5 class="version-category">Added</h5>
+    <ul>
+        <li><code>module-views.php</code> in module config directory</li>
+        <li>Method to retrieve view partials from other modules</li>
+    </ul>
+    
+    <h5 class="verion-category">Fixed</h5>
+    <ul>
+        <li>Broken Tests</li>
+    </ul>
+</div>
+
+<div class="version">
     <h4 class="version-title" id="ver-0.2">0.2 (July 8, 2018)</h4>
     
     <h5 class="version-category">Added</h5>
