@@ -196,3 +196,15 @@ Get all required modules for a given module:
 ```php?start_inline=true
 Module::getRequirements('name');
 ```
+
+Get all user defined view partials from all modules for a given module:
+
+```php?start_inline=true
+Module::getViewPartials('blog');
+```
+
+Nesting is also available via dot notation:
+
+```php?start_inline=true
+Module::getViewPartials('blog.group_name');
+```
