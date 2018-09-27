@@ -17,6 +17,7 @@ class BaseTestCase extends OrchestraTestCase
         parent::setUp();
 
         $this->app['files']->deleteDirectory(base_path('Modules'));
+        $this->withoutMockingConsoleOutput();
     }
 
     /**
