@@ -2,18 +2,17 @@
 
 namespace Rawilk\LaravelModules\Traits;
 
+/**
+ * @mixin \Illuminate\Console\Command
+ */
 trait ModuleCommands
 {
-    /**
-     * Get the module name.
-     *
-     * @return string
-     */
-    public function getModuleName()
+    public function getModuleName(): string
     {
-        $module = $this->argument('module') ?: app('modules')->getUsedNow();
+        $moduleName = $this->argument('module') ?: app('modules')->getUsedNow();
 
-        $module = app('modules')->findOrFail($module);
+        /** @var \Rawilk\LaravelModules\Module $module */
+        $module = app('modules')->findOrFail($moduleName);
 
         return $module->getStudlyName();
     }

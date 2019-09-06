@@ -3,53 +3,31 @@
 namespace Rawilk\LaravelModules\Publishing;
 
 use Illuminate\Console\Command;
-use Rawilk\LaravelModules\Contracts\PublisherInterface;
+use Illuminate\Filesystem\Filesystem;
+use Rawilk\LaravelModules\Contracts\Publisher as PublisherContract;
+use Rawilk\LaravelModules\Contracts\Repository;
 use Rawilk\LaravelModules\Module;
-use Rawilk\LaravelModules\Repository;
+use RuntimeException;
 
-abstract class Publisher implements PublisherInterface
+abstract class Publisher implements PublisherContract
 {
-    /**
-     * The name of module to use.
-     *
-     * @var string
-     */
-    protected $module;
-
-    /**
-     * The modules repository instance.
-     *
-     * @var \Rawilk\LaravelModules\Repository
-     */
-    protected $repository;
-
-    /**
-     * The laravel console instance.
-     *
-     * @var \Illuminate\Console\Command
-     */
+    /** @var \Illuminate\Console\Command */
     protected $console;
 
-    /**
-     * The success message will to display in the console.
-     *
-     * @var string
-     */
-    protected $success;
-
-    /**
-     * The error message to display in the console.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $error = '';
 
-    /**
-     * Determine if the result message will shown in the console.
-     *
-     * @var bool
-     */
+    /** @var string */
+    protected $module;
+
+    /** @var \Rawilk\LaravelModules\Contracts\Repository */
+    protected $repository;
+
+    /** @var bool */
     protected $showMessage = true;
+
+    /** @var string */
+    protected $success;
 
     /**
      * @param \Rawilk\LaravelModules\Module $module
@@ -59,121 +37,43 @@ abstract class Publisher implements PublisherInterface
         $this->module = $module;
     }
 
-    /**
-     * Show the result message.
-     *
-     * @return self
-     */
-    public function showMessage()
-    {
-        $this->showMessage = true;
+    abstract public function getDestinationPath(): string;
 
-        return $this;
+    abstract public function getSourcePath(): string;
+
+    public function getConsole(): Command
+    {
+        return $this->console;
     }
 
-    /**
-     * Hide the result message.
-     *
-     * @return self
-     */
-    public function hideMessage()
+    public function getFilesystem(): Filesystem
+    {
+        return $this->repository->getFiles();
+    }
+
+    public function getModule(): Module
+    {
+        return $this->module;
+    }
+
+    public function getRepository(): Repository
+    {
+        return $this->repository;
+    }
+
+    public function hideMessage(): self
     {
         $this->showMessage = false;
 
         return $this;
     }
 
-    /**
-     * Get the module instance.
-     *
-     * @return \Rawilk\LaravelModules\Module
-     */
-    public function getModule()
-    {
-        return $this->module;
-    }
-
-    /**
-     * Set the modules repository instance.
-     *
-     * @param \Rawilk\LaravelModules\Repository $repository
-     * @return $this
-     */
-    public function setRepository(Repository $repository)
-    {
-        $this->repository = $repository;
-
-        return $this;
-    }
-
-    /**
-     * Get the module repository instance.
-     *
-     * @return \Rawilk\LaravelModules\Repository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
-
-    /**
-     * Set the console instance.
-     *
-     * @param \Illuminate\Console\Command $console
-     * @return $this
-     */
-    public function setConsole(Command $console)
-    {
-        $this->console = $console;
-
-        return $this;
-    }
-
-    /**
-     * Get the console instance.
-     *
-     * @return \Illuminate\Console\Command
-     */
-    public function getConsole()
-    {
-        return $this->console;
-    }
-
-    /**
-     * Get the laravel filesystem instance.
-     *
-     * @return \Illuminate\Filesystem\Filesystem
-     */
-    public function getFilesystem()
-    {
-        return $this->repository->getFiles();
-    }
-
-    /**
-     * Get the destination path.
-     *
-     * @return string
-     */
-    abstract public function getDestinationPath();
-
-    /**
-     * Get the source path.
-     *
-     * @return string
-     */
-    abstract public function getSourcePath();
-
-    /**
-     * Publish something.
-     *
-     * @throws \RuntimeException
-     */
-    public function publish()
+    public function publish(): void
     {
         if (! $this->console instanceof Command) {
-            $message = "The 'console' property must instance of \\Illuminate\\Console\\Command.";
+            $message = "The 'console' property must be an instance of " . Command::class . '.';
 
-            throw new \RuntimeException($message);
+            throw new RuntimeException($message);
         }
 
         if (! $this->getFilesystem()->isDirectory($sourcePath = $this->getSourcePath())) {
@@ -191,5 +91,26 @@ abstract class Publisher implements PublisherInterface
         } else {
             $this->console->error($this->error);
         }
+    }
+
+    public function setConsole(Command $console): self
+    {
+        $this->console = $console;
+
+        return $this;
+    }
+
+    public function setRepository(Repository $repository): self
+    {
+        $this->repository = $repository;
+
+        return $this;
+    }
+
+    public function showMessage(): self
+    {
+        $this->showMessage = true;
+
+        return $this;
     }
 }

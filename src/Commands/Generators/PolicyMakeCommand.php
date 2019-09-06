@@ -10,50 +10,26 @@ class PolicyMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'name';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-policy
                             {name : The name of the policy class}
                             {module? : The name of the module to create the policy for}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new policy class for the specified module';
+    /** @var string */
+    protected $description = 'Create a new policy class for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
 
-        return (new Stub('/policy-plain.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getClass(),
-        ]))->render();
+        return $module->config('paths.generator.policies.namespace') ?: $module->config('paths.generator.policies.path', 'Policies');
     }
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -62,13 +38,13 @@ class PolicyMakeCommand extends GeneratorCommand
         return $path . $policyPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
+    protected function getTemplateContents(): string
     {
-        return $this->laravel['modules']->config('paths.generator.policies.path', 'Policies');
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub('/policy.stub', [
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
+        ]))->render();
     }
 }

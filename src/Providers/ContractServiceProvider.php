@@ -3,18 +3,13 @@
 namespace Rawilk\LaravelModules\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Rawilk\LaravelModules\Contracts\RepositoryInterface;
-use Rawilk\LaravelModules\Repository;
+use Rawilk\LaravelModules\Contracts\Repository;
+use Rawilk\LaravelModules\Laravel\LaravelFileRepository;
 
 class ContractServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    public function register(): void
     {
-        $this->app->bind(RepositoryInterface::class, Repository::class);
+        $this->app->bind(Repository::class, LaravelFileRepository::class);
     }
 }

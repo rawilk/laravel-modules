@@ -10,7 +10,6 @@ class RecipeWasCreated implements StoringMedia
      * @var
      */
     private $recipe;
-
     /**
      * @var
      */
@@ -24,7 +23,6 @@ class RecipeWasCreated implements StoringMedia
 
     /**
      * Return the entity
-     *
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function getEntity()

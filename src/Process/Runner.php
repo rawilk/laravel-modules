@@ -2,34 +2,23 @@
 
 namespace Rawilk\LaravelModules\Process;
 
+use Rawilk\LaravelModules\Contracts\Repository;
 use Rawilk\LaravelModules\Contracts\RunableInterface;
-use Rawilk\LaravelModules\Repository;
 
 class Runner implements RunableInterface
 {
-    /**
-     * The module instance.
-     *
-     * @var \Rawilk\LaravelModules\Repository
-     */
+    /** @var \Rawilk\LaravelModules\Contracts\Repository */
     protected $module;
 
     /**
-     * The constructor.
-     *
-     * @param \Rawilk\LaravelModules\Repository $module
+     * @param \Rawilk\LaravelModules\Contracts\Repository $module
      */
     public function __construct(Repository $module)
     {
         $this->module = $module;
     }
 
-    /**
-     * Run the given command.
-     *
-     * @param string $command
-     */
-    public function run($command)
+    public function run(string $command): void
     {
         passthru($command);
     }

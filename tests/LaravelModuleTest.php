@@ -4,66 +4,111 @@ namespace Rawilk\LaravelModules\Tests;
 
 use Modules\Recipe\Providers\DeferredServiceProvider;
 use Modules\Recipe\Providers\RecipeServiceProvider;
+use Rawilk\LaravelModules\Contracts\Activator;
 use Rawilk\LaravelModules\Json;
 use Rawilk\LaravelModules\Laravel\Module;
 
 class LaravelModuleTest extends BaseTestCase
 {
-    /**
-     * @var \Rawilk\LaravelModules\Tests\TestingModule
-     */
+    /** @var \Rawilk\LaravelModules\Tests\TestingModule */
     private $module;
+
+    /** @var \Rawilk\LaravelModules\Contracts\Activator */
+    private $activator;
 
     /**
      * Setup the test environment.
-     *
-     * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
+        $this->activator = $this->app[Activator::class];
+    }
+
+    /**
+     * Clean up the testing environment before the next test.
+     */
+    protected function tearDown(): void
+    {
+        $this->activator->reset();
+
+        parent::tearDown();
+    }
+
+    /**
+     * This method is called before the first test of this test class is run.
+     */
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        symlink(__DIR__ . '/stubs/valid', __DIR__ . '/stubs/valid_symlink');
+    }
+
+    /**
+     * This method is called after the last test of this test class is run.
+     */
+    public static function tearDownAfterClass(): void
+    {
+        parent::tearDownAfterClass();
+
+        unlink(__DIR__ . '/stubs/valid_symlink');
     }
 
     /** @test */
-    public function it_gets_module_name()
+    public function it_gets_the_module_name()
     {
         $this->assertEquals('Recipe Name', $this->module->getName());
     }
 
     /** @test */
-    public function it_gets_lowercase_module_name()
+    public function it_gets_the_lowercase_module_name()
     {
         $this->assertEquals('recipe name', $this->module->getLowerName());
     }
 
     /** @test */
-    public function it_gets_studly_name()
+    public function it_gets_the_studly_module_name()
     {
         $this->assertEquals('RecipeName', $this->module->getStudlyName());
     }
 
     /** @test */
-    public function it_gets_snake_case_name()
+    public function it_gets_the_snake_case_module_name()
     {
         $this->assertEquals('recipe_name', $this->module->getSnakeName());
     }
 
     /** @test */
-    public function it_gets_module_alias()
-    {
-        $this->assertEquals('recipe', $this->module->getAlias());
-    }
-
-    /** @test */
-    public function it_gets_module_description()
+    public function it_gets_the_module_description()
     {
         $this->assertEquals('recipe module', $this->module->getDescription());
     }
 
     /** @test */
-    public function it_get_module_path()
+    public function it_gets_the_module_alias()
+    {
+        $this->assertEquals('recipe', $this->module->getAlias());
+    }
+
+    /** @test */
+    public function it_gets_the_module_path()
+    {
+        $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
+    }
+
+    /** @test */
+    public function it_gets_the_module_path_with_a_symlink()
+    {
+        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid_symlink/Recipe');
+
+        $this->assertEquals(__DIR__ . '/stubs/valid_symlink/Recipe', $this->module->getPath());
+    }
+
+    /** @test */
+    public function it_gets_required_modules()
     {
         $this->assertEquals(['required_module'], $this->module->getRequires());
     }
@@ -89,42 +134,53 @@ class LaravelModuleTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_reads_keys_from_module_json_file_via_helper_methods()
+    public function it_reads_a_key_from_module_json_file_via_a_helper_method()
     {
         $this->assertEquals('Recipe', $this->module->get('name'));
         $this->assertEquals('0.1', $this->module->get('version'));
-        $this->assertEquals('my default', $this->module->get('something-not-there', 'my default'));
+        $this->assertEquals('my default', $this->module->get('not_exists', 'my default'));
         $this->assertEquals(['required_module'], $this->module->get('requires'));
     }
 
     /** @test */
-    public function it_reads_keys_from_composer_json_file_via_helper_method()
+    public function it_reads_keys_from_composer_json_files_via_a_helper_method()
     {
         $this->assertEquals('rawilk/recipe', $this->module->getComposerAttr('name'));
     }
 
     /** @test */
-    public function it_casts_modules_to_string()
+    public function it_casts_a_module_to_a_string()
     {
         $this->assertEquals('RecipeName', (string) $this->module);
     }
 
     /** @test */
-    public function it_checks_module_statuses()
+    public function it_checks_the_status_of_a_module()
     {
-        $this->assertTrue($this->module->isStatus(1));
-        $this->assertFalse($this->module->isStatus(0));
+        $this->assertFalse($this->module->isStatus(true));
+        $this->assertTrue($this->module->isStatus(false));
     }
 
     /** @test */
     public function it_checks_if_a_module_is_enabled()
     {
-        $this->assertTrue($this->module->enabled());
-        $this->assertFalse($this->module->disabled());
+        $this->assertFalse($this->module->isEnabled());
+        $this->assertTrue($this->module->isDisabled());
     }
 
     /** @test */
-    public function it_fires_disabled_events_when_a_module_gets_disabled()
+    public function it_fires_events_when_a_module_is_created()
+    {
+        $this->expectsEvents([
+            sprintf('modules.%s.enabling', $this->module->getLowerName()),
+            sprintf('modules.%s.enabled', $this->module->getLowerName())
+        ]);
+
+        $this->module->enable();
+    }
+
+    /** @test */
+    public function it_fires_events_when_a_module_is_disabled()
     {
         $this->expectsEvents([
             sprintf('modules.%s.disabling', $this->module->getLowerName()),
@@ -132,27 +188,14 @@ class LaravelModuleTest extends BaseTestCase
         ]);
 
         $this->module->disable();
-        $this->module->enable();
-    }
-
-    /** @test */
-    public function it_fires_enabled_events_when_a_module_gets_enabled()
-    {
-        $this->expectsEvents([
-            sprintf('modules.%s.enabling', $this->module->getLowerName()),
-            sprintf('modules.%s.enabled', $this->module->getLowerName())
-        ]);
-
-        $this->module->disable();
-        $this->module->enable();
     }
 
     /** @test */
     public function it_has_a_good_providers_manifest_path()
     {
         $this->assertEquals(
-            str_replace('/', '\\', $this->app->bootstrapPath("cache/{$this->module->getSnakeName()}_module.php")),
-            str_replace('/', '\\', $this->module->getCachedServicesPath())
+            $this->app->bootstrapPath("cache/{$this->module->getSnakeName()}_module.php"),
+            $this->module->getCachedServicesPath()
         );
     }
 
@@ -167,16 +210,17 @@ class LaravelModuleTest extends BaseTestCase
         $this->module->registerProviders();
 
         $this->assertFileExists($cachedServicesPath);
+
         $manifest = require $cachedServicesPath;
 
         $this->assertEquals([
             'providers' => [
                 RecipeServiceProvider::class,
-                DeferredServiceProvider::class,
+                DeferredServiceProvider::class
             ],
-            'eager'     => [RecipeServiceProvider::class],
-            'deferred'  => ['deferred' => DeferredServiceProvider::class],
-            'when'      => [DeferredServiceProvider::class => []]
+            'eager'    => [RecipeServiceProvider::class],
+            'deferred' => ['deferred' => DeferredServiceProvider::class],
+            'when'     => [DeferredServiceProvider::class => []]
         ], $manifest);
     }
 
@@ -191,7 +235,7 @@ class LaravelModuleTest extends BaseTestCase
             app('foo');
             $this->assertTrue(false, "app('foo') should throw an exception.");
         } catch (\Exception $e) {
-            $this->assertEquals('Class foo does not exist', $e->getMessage());
+            $this->assertEquals('Target class [foo] does not exist.', $e->getMessage());
         }
 
         app('deferred');
@@ -202,8 +246,4 @@ class LaravelModuleTest extends BaseTestCase
 
 class TestingModule extends Module
 {
-    public function registerProviders()
-    {
-        parent::registerProviders();
-    }
 }

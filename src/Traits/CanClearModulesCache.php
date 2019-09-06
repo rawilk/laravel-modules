@@ -4,12 +4,9 @@ namespace Rawilk\LaravelModules\Traits;
 
 trait CanClearModulesCache
 {
-    /**
-     * Clear the modules cache if enabled.
-     */
-    public function clearCache()
+    public function clearCache(): void
     {
-        if (config('modules.cache.enabled') === true) {
+        if (config('modules.cache.enabled')) {
             app('cache')->forget(config('modules.cache.key'));
         }
     }

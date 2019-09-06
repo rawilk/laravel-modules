@@ -30,7 +30,7 @@ class RecipeServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [];
+        return array();
     }
 
     private function registerBindings()
@@ -39,9 +39,11 @@ class RecipeServiceProvider extends ServiceProvider
             'Modules\Recipe\Repositories\RecipeRepository',
             function () {
                 $repository = new \Modules\Recipe\Repositories\Eloquent\EloquentRecipeRepository(new \Modules\Recipe\Entities\Recipe());
+
                 if (! config('app.cache')) {
                     return $repository;
                 }
+
                 return new \Modules\Recipe\Repositories\Cache\CacheRecipeDecorator($repository);
             }
         );

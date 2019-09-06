@@ -1,5 +1,11 @@
 <?php
 
+use Illuminate\Routing\Controller;
+use Illuminate\Mail\Mailable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Http\FormRequest;
+use Rawilk\LaravelModules\Activators\FileActivator;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -23,30 +29,31 @@ return [
         'enabled' => false,
         'path'    => base_path() . '/vendor/rawilk/laravel-modules/src/Commands/stubs',
         'files'   => [
-            'start'                 => 'start.php',
-            'routes'                => 'routes/web.php',
-            'scaffold/config'       => 'config/config.php',
-            'scaffold/module-views' => 'config/module-views.php',
+            'assets/js/app'         => 'resources/js/app.js',
+            'assets/sass/app'       => 'resources/sass/app.scss',
             'composer'              => 'composer.json',
+            'package'               => 'package.json',
+            'routes/web'            => 'routes/web.php',
+            'scaffold/config'       => 'config/config.php',
+            'views/index'           => 'resources/views/index.blade.php',
             'webpack'               => 'webpack.mix.js',
-            'package'               => 'package.json'
         ],
         'replacements' => [
-            'start'           => ['LOWER_NAME', 'ROUTES_LOCATION'],
-            'routes'          => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
-            'webpack'         => ['LOWER_NAME'],
-            'json'            => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
-            'scaffold/config' => ['STUDLY_NAME'],
-            'composer'        => [
+            'composer' => [
                 'LOWER_NAME',
                 'STUDLY_NAME',
                 'VENDOR',
                 'AUTHOR_NAME',
                 'AUTHOR_EMAIL',
                 'MODULE_NAMESPACE'
-            ]
+            ],
+            'json'            => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
+            'routes/web'      => ['LOWER_NAME', 'STUDLY_NAME'],
+            'scaffold/config' => ['STUDLY_NAME'],
+            'views/index'     => ['LOWER_NAME'],
+            'webpack'         => ['LOWER_NAME'],
         ],
-        'gitkeep' => false,
+        'gitkeep' => true,
     ],
 
     /*
@@ -59,11 +66,11 @@ return [
     |
     */
     'base_classes' => [
-        'controller' => 'Illuminate\Routing\Controller',
-        'mail'       => 'Illuminate\Mail\Mailable',
-        'model'      => 'Illuminate\Database\Eloquent\Model',
-        'request'    => 'Illuminate\Foundation\Http\FormRequest',
-        'repository' => 'BaseRepository'
+        'controller' => Controller::class,
+        'mail'       => Mailable::class,
+        'model'      => Model::class,
+        'request'    => FormRequest::class,
+        'repository' => 'App\Repositories\BaseRepository',
     ],
 
     'paths' => [
@@ -116,7 +123,7 @@ return [
             'factory'       => ['path' => 'database/factories', 'generate' => false],
             'model'         => ['path' => 'Models', 'generate' => true],
             'controller'    => ['path' => 'Http/Controllers', 'generate' => true],
-            'filter'        => ['path' => 'Http/Middleware', 'generate' => false],
+            'middleware'    => ['path' => 'Http/Middleware', 'generate' => false],
             'request'       => ['path' => 'Http/Requests', 'generate' => true],
             'provider'      => ['path' => 'Providers', 'generate' => true],
             'assets'        => ['path' => 'resources/assets', 'generate' => true],
@@ -195,4 +202,26 @@ return [
         'translations' => true,
         'files'        => 'register' // load files on 'boot' or 'register' in service provider
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activators
+    |--------------------------------------------------------------------------
+    |
+    | You can define new types of activators here, i.e. file, database, etc. The
+    | only required parameter is 'class'.
+    | The file activator will store the activation status in
+    | 'storage/installed_modules'.
+    |
+    */
+    'activators' => [
+        'file' => [
+            'class'          => FileActivator::class,
+            'statuses-file'  => storage_path('module_statuses.json'),
+            'cache-key'      => 'activator.installed',
+            'cache-lifetime' => 604800,
+        ],
+    ],
+
+    'activator' => 'file',
 ];

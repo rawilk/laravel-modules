@@ -11,54 +11,28 @@ class ListenerMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'name';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-listener
                             {name : The name of the listener}
-                            {module? : The name of the module to make listener for}
-                            {--e|event : The event class being listened for}
+                            {module? : The name of the module to create a new listener for}
+                            {--e|event= : The event class being listened for}
                             {--queued : Indicates the event listener should be queued}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new event listener class for the specified module';
+    /** @var string */
+    protected $description = 'Create a new event listener class for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
 
-        return (new Stub($this->getStubName(), [
-            'NAMESPACE'      => $this->getNamespace($module),
-            'EVENTNAME'      => $this->getEventName($module),
-            'SHORTEVENTNAME' => $this->option('event'),
-            'CLASS'          => $this->getClass(),
-        ]))->render();
+        return $module->config('paths.generator.listener.namespace') ?: $module->config('paths.generator.listener.path', 'Listeners');
     }
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -67,40 +41,27 @@ class ListenerMakeCommand extends GeneratorCommand
         return $path . $listenerPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * Get the event name.
-     *
-     * @param \Rawilk\LaravelModules\Module $module
-     * @return string
-     */
-    private function getEventName(Module $module)
+    protected function getTemplateContents(): string
+    {
+        /** @var \Rawilk\LaravelModules\Module $module */
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub($this->getStubName(), [
+            'NAMESPACE'      => $this->getClassNamespace($module),
+            'EVENTNAME'      => $this->getEventName($module),
+            'SHORTEVENTNAME' => $this->option('event'),
+            'CLASS'          => $this->getClass(),
+        ]))->render();
+    }
+
+    private function getEventName(Module $module): string
     {
         $eventPath = GenerateConfigReader::read('event');
 
         return $this->getClassNamespace($module) . '\\' . $eventPath->getPath() . '\\' . $this->option('event');
     }
 
-    /**
-     * Get the listener namespace.
-     *
-     * @param \Rawilk\LaravelModules\Module $module
-     * @return string
-     */
-    private function getNamespace(Module $module)
-    {
-        $listenerPath = GenerateConfigReader::read('listener');
-
-        $namespace = str_replace('/', '\\', $listenerPath->getPath());
-
-        return $this->getClassNamespace($module) . '\\' . $namespace;
-    }
-
-    /**
-     * Get the name of the stub file.
-     *
-     * @return string
-     */
-    private function getStubName() : string
+    private function getStubName(): string
     {
         if ($this->option('queued')) {
             if ($this->option('event')) {

@@ -3,124 +3,52 @@
 namespace Rawilk\LaravelModules\Support\Migrations;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class SchemaParser implements Arrayable
 {
-    /**
-     * The custom attributes
-     *
-     * @var array
-     */
-    protected $customAttributes = [
+    /** @var array */
+    protected static $customAttributes = [
         'remember_token' => 'rememberToken()',
-        'soft_delete'    => 'softDeletes()',
+        'soft_delete'    => 'softDeletes()'
     ];
 
-    /**
-     * The migration schema
-     *
-     * @var string
-     */
+    /** @var array */
+    protected static $relationshipKeys = ['belongsTo'];
+
+    /** @var string|null */
     protected $schema;
 
     /**
-     * The relationship keys
-     *
-     * @var array
-     */
-    protected $relationshipKeys = [
-        'belongsTo',
-    ];
-
-    /**
-     * Create new class instance.
-     *
      * @param string|null $schema
      */
-    public function __construct($schema = null)
+    public function __construct(?string $schema = null)
     {
         $this->schema = $schema;
     }
 
-    /**
-     * Convert the given string to an array of formatted data.
-     *
-     * @param string $schema
-     * @return array
-     */
-    public function parse($schema)
+    public function createField(string $column, array $attributes, string $type = 'add'): string
     {
-        $this->schema = $schema;
+        $results = "\t\t\t" . '$table';
 
-        $parsed = [];
-
-        foreach ($this->getSchemas() as $schemaData) {
-            $column = $this->getColumn($schemaData);
-
-            $attributes = $this->getAttributes($column, $schemaData);
-
-            $parsed[$column] = $attributes;
+        foreach ($attributes as $key => $field) {
+            if (in_array($column, static::$relationshipKeys, true)) {
+                $results .= $this->addRelationColumn($key, $field, $column);
+            } else {
+                $results .= $this->{"{$type}Column"}($key, $field, $column);
+            }
         }
 
-        return $parsed;
+        return $results . ';' . PHP_EOL;
     }
 
     /**
-     * Get the schemas.
-     *
-     * @return array
-     */
-    public function getSchemas()
-    {
-        if (is_null($this->schema)) {
-            return [];
-        }
-
-        return explode(',', str_replace(' ', '', $this->schema));
-    }
-
-    /**
-     * Get the instance as an array.
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->parse($this->schema);
-    }
-
-    /**
-     * Render the migration to a formatted script.
+     * Render the down function of the migration.
      *
      * @return string
      */
-    public function render()
-    {
-        $results = '';
-
-        foreach ($this->toArray() as $column => $attributes) {
-            $results .= $this->createField($column, $attributes);
-        }
-
-        return $results;
-    }
-
-    /**
-     * Render up migration fields.
-     *
-     * @return string
-     */
-    public function up()
-    {
-        return $this->render();
-    }
-
-    /**
-     * Render down migration fields.
-     *
-     * @return string
-     */
-    public function down()
+    public function down(): string
     {
         $results = '';
 
@@ -133,134 +61,114 @@ class SchemaParser implements Arrayable
         return $results;
     }
 
-    /**
-     * Create the given field.
-     *
-     * @param string $column
-     * @param array $attributes
-     * @param string $type
-     * @return string
-     */
-    public function createField($column, $attributes, $type = 'add')
+    public function getAttributes(string $column, string $schema): array
     {
-        $results = "\t\t\t" . '$table';
-
-        foreach ($attributes as $key => $field) {
-            if (in_array($column, $this->relationshipKeys)) {
-                $results .= $this->addRelationColumn($key, $field, $column);
-            } else {
-                $results .= $this->{"{$type}Column"}($key, $field, $column);
-            }
-        }
-
-        return $results . ';' . PHP_EOL;
-    }
-
-    /**
-     * Generate the given relation column.
-     *
-     * @param int $key
-     * @param string $field
-     * @param string $column
-     * @return string
-     */
-    protected function addRelationColumn($key, $field, $column)
-    {
-        $relatedColumn = snake_case(class_basename($field)) . '_id';
-
-        $method = 'integer';
-
-        return "->{$method}('{$relatedColumn}')";
-    }
-
-    /**
-     * Format the given field to a migration command.
-     *
-     * @param int $key
-     * @param string $field
-     * @param string $column
-     * @return string
-     */
-    protected function addColumn($key, $field, $column)
-    {
-        if ($this->hasCustomAttribute($column)) {
-            return "->{$field}";
-        }
-
-        if ($key == 0) {
-            return "->{$field}('{$column}')";
-        }
-
-        if (str_contains($field, '(')) {
-            return "->{$field}";
-        }
-
-        return "->{$field}()";
-    }
-
-    /**
-     * Format the given field to a drop migration command.
-     *
-     * @param int $key
-     * @param string $field
-     * @param string $column
-     * @return string
-     */
-    protected function removeColumn($key, $field, $column)
-    {
-        if ($this->hasCustomAttribute($column)) {
-            return "->{$field}";
-        }
-
-        return "->dropColumn('{$column}')";
-    }
-
-    /**
-     * Get the column name from the given schema.
-     *
-     * @param string $schema
-     * @return string
-     */
-    public function getColumn($schema)
-    {
-        return array_get(explode(':', $schema), 0);
-    }
-
-    /**
-     * Get the given column's attributes.
-     *
-     * @param string $column
-     * @param string $schema
-     * @return array
-     */
-    public function getAttributes($column, $schema)
-    {
-        $fields = str_replace($column . ':', '', $schema);
+        $fields = str_replace("{$column}:", '', $schema);
 
         return $this->hasCustomAttribute($column)
             ? $this->getCustomAttribute($column)
             : explode(':', $fields);
     }
 
-    /**
-     * Determine if the given column is a custom attribute.
-     *
-     * @param string $column
-     * @return bool
-     */
-    public function hasCustomAttribute($column)
+    public function getColumn(string $schema): string
     {
-        return array_key_exists($column, $this->customAttributes);
+        return Arr::get(explode(':', $schema), 0);
+    }
+
+    public function getCustomAttribute(string $column): array
+    {
+        return (array) static::$customAttributes[$column];
+    }
+
+    public function getSchemas(): array
+    {
+        if ($this->schema === null) {
+            return [];
+        }
+
+        return explode(',', str_replace(' ', '', $this->schema));
+    }
+
+    public function hasCustomAttribute(string $column): bool
+    {
+        return array_key_exists($column, static::$customAttributes);
+    }
+
+    public function parse(?string $schema): array
+    {
+        $this->schema = $schema;
+
+        $parsed = [];
+
+        foreach ($this->getSchemas() as $schemas) {
+            $column = $this->getColumn($schemas);
+
+            $attributes = $this->getAttributes($column, $schemas);
+
+            $parsed[$column] = $attributes;
+        }
+
+        return $parsed;
+    }
+
+    public function render(): string
+    {
+        $results = '';
+
+        foreach ($this->toArray() as $column => $attributes) {
+            $results .= $this->createField($column, $attributes);
+        }
+
+        return $results;
+    }
+
+    public function toArray(): array
+    {
+        return $this->parse($this->schema);
     }
 
     /**
-     * Get the given custom attribute's value.
+     * Render the up function of the migration.
      *
-     * @param string $column
-     * @return array
+     * @return string
      */
-    public function getCustomAttribute($column)
+    public function up(): string
     {
-        return (array) $this->customAttributes[$column];
+        return $this->render();
+    }
+
+    protected function addColumn(int $key, string $field, string $column): string
+    {
+        if ($this->hasCustomAttribute($column)) {
+            return "->{$field}";
+        }
+
+        if ($key === 0) {
+            return "->{$field}('{$column}')";
+        }
+
+        if (Str::contains($field, '(')) {
+            return "->{$field}";
+        }
+
+        return "->{$field}()";
+    }
+
+    protected function addRelationColumn(int $key, string $field, string $column): string
+    {
+        $relatedColumn = Str::snake(class_basename($field)) . '_id';
+
+        $method = 'integer';
+
+        return "->{$method}('{$relatedColumn}')";
+    }
+
+    protected function removeColumn(int $key, string $field, string $column): string
+    {
+        if ($this->hasCustomAttribute($column)) {
+            return "->{$field}";
+        }
+
+        return "->dropColumn('{$column}')";
     }
 }

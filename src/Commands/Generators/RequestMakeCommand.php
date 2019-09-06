@@ -10,53 +10,27 @@ class RequestMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'name';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-request
-                            {name : The name of the form request class}
-                            {module? : The name of the module to create the request for}
-                            {--base_class= : Override the default base class}';
+                            {name : The name of the request class}
+                            {module? : The name of the module to create the request class for}
+                            {--base_class= : Override the default base class (from config)}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new form request class for the specified module';
+    /** @var string */
+    protected $description = 'Create a new request class for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
 
-        return (new Stub('/request.stub', [
-            'NAMESPACE'        => $this->getClassNamespace($module),
-            'CLASS'            => $this->getClass(),
-            'BASE_CLASS'       => $this->getBaseClass('request'),
-            'BASE_CLASS_SHORT' => $this->getBaseClass('request', true)
-        ]))->render();
+        return $module->config('paths.generator.request.namespace') ?: $module->config('paths.generator.request.path', 'Http/Requests');
     }
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -65,13 +39,16 @@ class RequestMakeCommand extends GeneratorCommand
         return $path . $requestPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
+    protected function getTemplateContents(): string
     {
-        return $this->laravel['modules']->config('paths.generator.request.path', 'Http/Requests');
+        /** @var \Rawilk\LaravelModules\Module $module */
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub('/request.stub', [
+            'NAMESPACE'        => $this->getClassNamespace($module),
+            'CLASS'            => $this->getClass(),
+            'BASE_CLASS'       => $this->getBaseClass('request'),
+            'BASE_CLASS_SHORT' => $this->getBaseClass('request', true)
+        ]))->render();
     }
 }

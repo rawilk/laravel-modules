@@ -4,162 +4,87 @@ namespace Rawilk\LaravelModules\Support;
 
 class Stub
 {
-    /**
-     * The stub path.
-     *
-     * @var string
-     */
+    /** @var null|string */
+    protected static $basePath;
+
+    /** @var string */
     protected $path;
 
-    /**
-     * The base path of the stub file.
-     *
-     * @var null|string
-     */
-    protected static $basePath = null;
-
-    /**
-     * The replacements to make.
-     *
-     * @var array
-     */
+    /** @var array */
     protected $replaces = [];
 
     /**
-     * Create a new class instance.
-     *
      * @param string $path
      * @param array $replaces
      */
-    public function __construct($path, array $replaces = [])
+    public function __construct(string $path, array $replaces = [])
     {
         $this->path = $path;
         $this->replaces = $replaces;
     }
 
-    /**
-     * Create a new instance.
-     *
-     * @param string $path
-     * @param array $replaces
-     * @return static
-     */
-    public static function create($path, array $replaces = [])
+    public static function create(string $path, array $replaces = []): self
     {
         return new static($path, $replaces);
     }
 
-    /**
-     * Set the stub path.
-     *
-     * @param string $path
-     * @return $this
-     */
-    public function setPath($path)
+    public static function getBasePath(): ?string
     {
-        $this->path = $path;
-
-        return $this;
+        return static::$basePath;
     }
 
-    /**
-     * Get the stub path.
-     *
-     * @return string
-     */
-    public function getPath()
+    public static function setBasePath(string $path): void
+    {
+        static::$basePath = $path;
+    }
+
+    public function getContents(): string
+    {
+        $contents = file_get_contents($this->getPath());
+
+        foreach ($this->replaces as $key => $value) {
+            $contents = str_replace('$' . strtoupper($key) . '$', $value, $contents);
+        }
+
+        return $contents;
+    }
+
+    public function getReplaces(): array
+    {
+        return $this->replaces;
+    }
+
+    public function getPath(): string
     {
         $path = static::getBasePath() . $this->path;
 
         return file_exists($path) ? $path : __DIR__ . '/../Commands/stubs' . $this->path;
     }
 
-    /**
-     * Set the base stub path.
-     *
-     * @param string $path
-     */
-    public static function setBasePath($path)
-    {
-        static::$basePath = $path;
-    }
-
-    /**
-     * Get the base stub path.
-     *
-     * @return null|string
-     */
-    public static function getBasePath()
-    {
-        return static::$basePath;
-    }
-
-    /**
-     * Return a replaced version of the stub.
-     *
-     * @return string
-     */
-    public function getContents()
-    {
-        $contents = file_get_contents($this->getPath());
-
-        foreach ($this->replaces as $search => $replace) {
-            $contents = str_replace('$' . strtoupper($search) . '$', $replace, $contents);
-        }
-
-        return $contents;
-    }
-
-    /**
-     * Alias to getContents()
-     *
-     * @return string
-     */
-    public function render()
+    public function render(): string
     {
         return $this->getContents();
     }
 
-    /**
-     * Save stub to the given path.
-     *
-     * @param string $path
-     * @param string $filename
-     * @return bool|int
-     */
-    public function saveTo($path, $filename)
-    {
-        return file_put_contents($path . '/' . $filename, $this->getContents());
-    }
-
-    /**
-     * Set the replacements.
-     *
-     * @param array $replaces
-     * @return $this
-     */
-    public function replace(array $replaces = [])
+    public function replace(array $replaces = []): self
     {
         $this->replaces = $replaces;
 
         return $this;
     }
 
-    /**
-     * Get the replacements.
-     *
-     * @return array
-     */
-    public function getReplaces()
+    public function saveTo(string $path, string $filename): bool
     {
-        return $this->replaces;
+        return file_put_contents($path . '/' . $filename, $this->getContents());
     }
 
-    /**
-     * Handle magic method __toString.
-     *
-     * @return string
-     */
+    public function setPath(string $path): self
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
     public function __toString()
     {
         return $this->render();

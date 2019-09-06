@@ -3,36 +3,25 @@
 namespace Rawilk\LaravelModules\Commands\Generators;
 
 use Illuminate\Console\Command;
-use Rawilk\LaravelModules\Exceptions\FileAlreadyExistsException;
+use Illuminate\Support\Str;
+use Rawilk\LaravelModules\Exceptions\FileAlreadyExists;
 use Rawilk\LaravelModules\Generators\FileGenerator;
+use Rawilk\LaravelModules\Module;
 
 abstract class GeneratorCommand extends Command
 {
     /**
-     * The name of 'name' argument.
+     * The name of the 'name' argument.
      *
      * @var string
      */
     protected $argumentName = '';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    abstract protected function getTemplateContents();
+    abstract protected function getDestinationFilePath(): string;
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    abstract protected function getDestinationFilePath();
+    abstract protected function getTemplateContents(): string;
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): void
     {
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
@@ -43,56 +32,37 @@ abstract class GeneratorCommand extends Command
         $contents = $this->getTemplateContents();
 
         try {
-            with(new FileGenerator($path, $contents))->generate();
+            $overwriteFile = $this->hasOption('force') ? $this->option('force') : false;
+            (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
+
             $this->info("Created: {$path}");
-        } catch (FileAlreadyExistsException $e) {
+        } catch (FileAlreadyExists $e) {
             $this->error("File: {$path} already exists.");
         }
     }
 
     /**
-     * Get class name.
+     * Get the base class to extend for a given class type.
      *
+     * @param string $classType
+     * @param bool $returnBasename
      * @return string
      */
-    public function getClass()
+    protected function getBaseClass(string $classType, bool $returnBasename = false): string
+    {
+        $baseClass = $this->hasOption('base_class') && $this->option('base_class') !== null
+            ? $this->option('base_class')
+            : $this->laravel['modules']->config("base_classes.{$classType}");
+
+        return $returnBasename ? class_basename($baseClass) : str_replace('/', '\\', $baseClass);
+    }
+
+    protected function getClass(): string
     {
         return class_basename($this->argument($this->argumentName));
     }
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
-    {
-        return '';
-    }
-
-    /**
-     * Get the base class to extend.
-     *
-     * @param string $classType
-     * @param bool $basename
-     * @return string
-     */
-    protected function getBaseClass($classType, $basename = false)
-    {
-        $baseClass = $this->hasOption('base_class') && ! is_null($this->option('base_class'))
-            ? $this->option('base_class')
-            : $this->laravel['modules']->config("base_classes.{$classType}");
-
-        return $basename ? class_basename($baseClass) : str_replace('/', '\\', $baseClass);
-    }
-
-    /**
-     * Get the class namespace for the given module.
-     *
-     * @param \Rawilk\LaravelModules\Module $module
-     * @return string
-     */
-    public function getClassNamespace($module)
+    protected function getClassNamespace(Module $module): string
     {
         $namespace = $this->laravel['modules']->config('namespace');
 
@@ -107,21 +77,21 @@ abstract class GeneratorCommand extends Command
         return trim($namespace, '\\');
     }
 
-    private function getExtraNamespace($path)
+    protected function getDefaultNamespace(): string
     {
-        $path = str_replace('/', "\\", $path);
-        $pieces = explode("\\", $path);
-
-        return join(array_slice($pieces, 0, count($pieces) - 1), "\\");
+        return '';
     }
 
-    /**
-     * Get the name of the file.
-     *
-     * @return string
-     */
-    protected function getFileName() : string
+    protected function getFileName(): string
     {
-        return studly_case($this->argument($this->argumentName));
+        return Str::studly($this->argument($this->argumentName));
+    }
+
+    private function getExtraNamespace(string $path): string
+    {
+        $path = str_replace('/', '\\', $path);
+        $pieces = explode("\\", $path);
+
+        return implode("\\", array_slice($pieces, 0, count($pieces) - 1) );
     }
 }

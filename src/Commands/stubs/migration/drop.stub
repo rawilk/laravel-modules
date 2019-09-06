@@ -23,10 +23,11 @@ class $CLASS$ extends Migration
      */
     public function down()
     {
-        Schema::create('$TABLE$', function (Blueprint $table) {
-            $table->increments('id')->unsigned();
+        Schema::table('$TABLE$', function (Blueprint $table) {
+            $table->bigIncrements('id');
 $FIELDS$
-            $table->timestamps();
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
         });
     }
 }

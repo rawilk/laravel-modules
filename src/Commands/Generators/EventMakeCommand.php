@@ -10,36 +10,36 @@ class EventMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'name';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-event
                             {name : The name of the event}
                             {module? : The name of the module to create the event for}
                             {--p|plain : Create a plain event}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new event class for the specified module';
+    /** @var string */
+    protected $description = 'Create a new event class for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    public function getTemplateContents()
+    protected function getDefaultNamespace(): string
+    {
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
+
+        return $module->config('paths.generator.event.namespace') ?: $module->config('paths.generator.event.path', 'Events');
+    }
+
+    protected function getDestinationFilePath(): string
+    {
+        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+
+        $eventPath = GenerateConfigReader::read('event');
+
+        return $path . $eventPath->getPath() . '/' . $this->getFileName() . '.php';
+    }
+
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -49,37 +49,10 @@ class EventMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    /**
-     * Get the path of the stub file to use.
-     *
-     * @return string
-     */
-    protected function getStubPath()
+    private function getStubPath(): string
     {
-        return $this->option('plain') ? '/event-plain.stub' : '/event.stub';
-    }
-
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    public function getDestinationFilePath()
-    {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-
-        $eventPath = GenerateConfigReader::read('event');
-
-        return $path . $eventPath->getPath() . '/' . $this->getFileName() . '.php';
-    }
-
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
-    {
-        return $this->laravel['modules']->config('paths.generator.event.path', 'Events');
+        return $this->option('plain') === true
+            ? '/event-plain.stub'
+            : '/event.stub';
     }
 }

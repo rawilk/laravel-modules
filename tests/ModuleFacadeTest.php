@@ -11,11 +11,11 @@ class ModuleFacadeTest extends BaseTestCase
     {
         $modules = Module::all();
 
-        $this->assertTrue(is_array($modules));
+        $this->assertIsArray($modules);
     }
 
     /** @test */
-    public function it_creates_macros_via_the_facade()
+    public function it_can_create_macros_via_facade()
     {
         Module::macro('testMacro', function () {
             return true;
@@ -25,7 +25,7 @@ class ModuleFacadeTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_calls_macros_via_the_facade()
+    public function it_calls_macros_via_facade()
     {
         Module::macro('testMacro', function () {
             return 'a value';

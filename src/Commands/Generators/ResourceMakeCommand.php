@@ -2,6 +2,7 @@
 
 namespace Rawilk\LaravelModules\Commands\Generators;
 
+use Illuminate\Support\Str;
 use Rawilk\LaravelModules\Support\Config\GenerateConfigReader;
 use Rawilk\LaravelModules\Support\Stub;
 use Rawilk\LaravelModules\Traits\ModuleCommands;
@@ -10,51 +11,27 @@ class ResourceMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'name';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-resource
                             {name : The name of the resource class}
                             {module? : The name of the module to create the resource for}
-                            {--c|collection : Create a resource collection class}';
+                            {--c|collection : Indicates a resource collection should be created}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new resource class for the specified module';
+    /** @var string */
+    protected $description = 'Create a new resource class for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
 
-        return (new Stub($this->getStubName(), [
-            'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getClass(),
-        ]))->render();
+        return $module->config('paths.generator.resource.namespace') ?: $module->config('paths.generator.resource.path', 'Transformers');
     }
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -63,32 +40,24 @@ class ResourceMakeCommand extends GeneratorCommand
         return $path . $resourcePath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
+    protected function getTemplateContents(): string
     {
-        return $this->laravel['modules']->config('paths.generator.resource.path', 'Transformers');
+        /** @var \Rawilk\LaravelModules\Module $module */
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub($this->getStubName(), [
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
+        ]))->render();
     }
 
-    /**
-     * Determine if the command is generating a resource collection.
-     *
-     * @return bool
-     */
-    private function collection() : bool
+    private function collection(): bool
     {
-        return $this->option('collection') || ends_with($this->argument($this->argumentName), 'Collection');
+        return $this->option('collection')
+            || Str::endsWith($this->argument('name'), 'Collection');
     }
 
-    /**
-     * Get the stub file name.
-     *
-     * @return string
-     */
-    private function getStubName() : string
+    private function getStubName(): string
     {
         if ($this->collection()) {
             return '/resource-collection.stub';
