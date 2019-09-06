@@ -12,9 +12,7 @@
             "providers": [
                 "Modules\\\\Blog\\\\Providers\\\\BlogServiceProvider"
             ],
-            "aliases": {
-
-            }
+            "aliases": {}
         }
     },
     "autoload": {
