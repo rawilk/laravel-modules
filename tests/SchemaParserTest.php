@@ -16,7 +16,7 @@ class SchemaParserTest extends BaseTestCase
 \t\t\t\$table->integer('password');\n
 TEXT;
 
-        $this->assertEquals($expected, $parser->render());
+        $this->assertEquals($this->normalizeString($expected), $parser->render());
     }
 
     /** @test */
@@ -29,7 +29,7 @@ TEXT;
 \t\t\t\$table->integer('password');\n
 TEXT;
 
-        $this->assertEquals($expected, $parser->up());
+        $this->assertEquals($this->normalizeString($expected), $parser->up());
     }
 
     /** @test */
@@ -42,6 +42,11 @@ TEXT;
 \t\t\t\$table->dropColumn('password');\n
 TEXT;
 
-        $this->assertEquals($expected, $parser->down());
+        $this->assertEquals($this->normalizeString($expected), $parser->down());
+    }
+
+    private function normalizeString(string $str): string
+    {
+        return str_replace("\r", '', $str);
     }
 }
