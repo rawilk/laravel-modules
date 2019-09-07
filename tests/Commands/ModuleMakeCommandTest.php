@@ -2,6 +2,7 @@
 
 namespace Rawilk\LaravelModules\Tests\Commands;
 
+use Illuminate\Support\Facades\Artisan;
 use Rawilk\LaravelModules\Contracts\Activator;
 use Rawilk\LaravelModules\Contracts\Repository;
 use Rawilk\LaravelModules\Tests\BaseTestCase;
@@ -198,6 +199,43 @@ class ModuleMakeCommandTest extends BaseTestCase
         $content = json_decode($this->finder->get($path), true);
 
         $this->assertCount(0, $content['providers']);
+    }
+
+    /** @test */
+    public function it_outputs_an_error_when_a_module_already_exists()
+    {
+        $this->generateModule();
+        $this->generateModule();
+
+        $this->assertStringContainsString('already exists', Artisan::output());
+    }
+
+    /** @test */
+    public function it_still_generates_a_module_if_it_exists_when_using_the_force_flag()
+    {
+        $this->generateModule();
+        $this->generateModule('Blog', ['--force' => true]);
+
+        $output = Artisan::output();
+
+        $this->assertStringNotContainsString('already exists', $output);
+        $this->assertStringContainsString('created', $output);
+    }
+
+    /** @test */
+    public function it_generates_an_enabled_module_by_default()
+    {
+        $this->generateModule();
+
+        $this->assertTrue($this->repository->isEnabled('Blog'));
+    }
+
+    /** @test */
+    public function it_generates_a_disabled_module_with_the_disabled_flag()
+    {
+        $this->generateModule('Blog', ['--disabled' => true]);
+
+        $this->assertTrue($this->repository->isDisabled('Blog'));
     }
 
     private function generateModule(string $moduleName = 'Blog', array $arguments = []): void

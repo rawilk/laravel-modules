@@ -119,11 +119,18 @@ class ModuleGenerator extends Generator
                 continue;
             }
 
-            $path = $this->module->getModulePath($this->getName()) . '/' . $folder->getPath();
+            $path = str_replace(
+                '//',
+                '/',
+                $this->module->getModulePath($this->getName()) . '/' . $folder->getPath()
+            );
 
-            $this->filesystem->makeDirectory($path, 0755, true);
-            if (config('modules.stubs.gitkeep')) {
-                $this->generateGitKeep($path);
+            if (! $this->filesystem->isDirectory($path)) {
+                $this->filesystem->makeDirectory($path, 0755, true);
+
+                if (config('modules.stubs.gitkeep')) {
+                    $this->generateGitKeep($path);
+                }
             }
         }
     }

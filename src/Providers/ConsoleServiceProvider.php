@@ -34,6 +34,7 @@ use Rawilk\LaravelModules\Commands\Other\MigrateResetCommand;
 use Rawilk\LaravelModules\Commands\Other\MigrateRollbackCommand;
 use Rawilk\LaravelModules\Commands\Other\PublishCommand;
 use Rawilk\LaravelModules\Commands\Other\PublishConfigurationCommand;
+use Rawilk\LaravelModules\Commands\Other\PublishMigrationCommand;
 use Rawilk\LaravelModules\Commands\Other\PublishTranslationCommand;
 use Rawilk\LaravelModules\Commands\Other\SeedCommand;
 use Rawilk\LaravelModules\Commands\Other\UnUseCommand;
@@ -77,6 +78,7 @@ class ConsoleServiceProvider extends ServiceProvider
         MigrateRollbackCommand::class,
         PublishCommand::class,
         PublishConfigurationCommand::class,
+        PublishMigrationCommand::class,
         PublishTranslationCommand::class,
         SeedCommand::class,
         UnUseCommand::class,
