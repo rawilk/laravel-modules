@@ -109,7 +109,7 @@ class JsonTest extends BaseTestCase
     "files": []
 }';
 
-        $this->assertEquals($expected, $this->json->toJsonPretty());
+        $this->assertEquals(str_replace("\r", '', $expected), $this->json->toJsonPretty());
     }
 
     /** @test */
@@ -145,6 +145,6 @@ class JsonTest extends BaseTestCase
     ]
 }';
 
-        $this->assertEquals($expected, (string) $this->json);
+        $this->assertEquals($expected, str_replace("\r", '', (string) $this->json));
     }
 }
