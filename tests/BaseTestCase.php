@@ -17,6 +17,10 @@ abstract class BaseTestCase extends OrchestraTestCase
         if (method_exists($this, 'withoutMockingConsoleOutput')) {
             $this->withoutMockingConsoleOutput();
         }
+
+        if ($this->app['files']->isDirectory($dir = base_path('Modules'))) {
+            $this->app['files']->delete($dir);
+        }
     }
 
     /**
