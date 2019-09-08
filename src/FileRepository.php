@@ -30,6 +30,9 @@ abstract class FileRepository implements Repository, Countable
     /** @var \Illuminate\Filesystem\Filesystem */
     private $files;
 
+    /** @var bool */
+    private $onlyCustomPaths = false;
+
     /** @var string */
     protected $path;
 
@@ -212,11 +215,14 @@ abstract class FileRepository implements Repository, Countable
         $modules = [];
 
         /** @var \Rawilk\LaravelModules\Module $module */
-         foreach ($this->all() as $name => $module) {
-             if ($module->isStatus($active)) {
-                 $modules[$name] = $module;
-             }
-         }
+        foreach ($this->all() as $name => $module) {
+            if ($module->isStatus($active)) {
+                $modules[$name] = $module;
+            }
+        }
+
+        // Reset our variable
+        $this->onlyCustomPaths = false;
 
         return $modules;
     }
@@ -278,7 +284,9 @@ abstract class FileRepository implements Repository, Countable
     {
         $paths = $this->paths;
 
-        $paths[] = $this->getPath();
+        if (! $this->onlyCustomPaths) {
+            $paths[] = $this->getPath();
+        }
 
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
@@ -345,6 +353,13 @@ abstract class FileRepository implements Repository, Countable
     public function isEnabled(string $name): bool
     {
         return $this->findOrFail($name)->isEnabled();
+    }
+
+    public function onlyCustomPaths(): self
+    {
+        $this->onlyCustomPaths = true;
+
+        return $this;
     }
 
     public function register(): void
