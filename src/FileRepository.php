@@ -5,6 +5,7 @@ namespace Rawilk\LaravelModules;
 use Countable;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Rawilk\LaravelModules\Contracts\Repository;
@@ -333,6 +334,49 @@ abstract class FileRepository implements Repository, Countable
         }
 
         return $path;
+    }
+
+    /**
+     * Retrieve a sorted list of registered view partials to render for the given module.
+     *
+     * @param string $moduleName
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function getViewPartials(string $moduleName): array
+    {
+        $modules = $this->getOrdered();
+
+        $partials = [];
+
+        /** @var \Rawilk\LaravelModules\Module $module */
+        foreach ($modules as $module) {
+            $path = $module->getExtraPath('config/module-views.php');
+
+            if (! $this->files->exists($path)) {
+                continue;
+            }
+
+            $moduleViews = $this->files->getRequire($path);
+            $moduleViews = Arr::get($moduleViews, $moduleName, []);
+
+            if (! empty($moduleViews)) {
+                $partials = array_merge($partials, $moduleViews);
+            }
+        }
+
+        uasort($partials, static function ($a, $b) {
+            $aOrder = $a['order'] ?? 0;
+            $bOrder = $b['order'] ?? 0;
+
+            if ($aOrder === $bOrder) {
+                return 0;
+            }
+
+            return $aOrder > $bOrder ? 1 : -1;
+        });
+
+        return $partials;
     }
 
     public function has(string $name): bool

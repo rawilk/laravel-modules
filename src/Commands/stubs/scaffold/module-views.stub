@@ -1,0 +1,15 @@
+<?php
+
+return [
+    /**
+     * Example:
+     *
+     * 'settings' => [
+     *     'social-login' => [
+     *         'order' => 5,
+     *         'title' => 'Social Login',
+     *         'view'  => '$LOWER_NAME$::backend.settings.social-login'
+     *     ]
+     * ]
+     */
+];
