@@ -31,7 +31,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->modulePath = base_path('modules/Blog');
+        $this->modulePath = base_path('Modules/Blog');
         $this->finder = $this->app['files'];
         $this->repository = $this->app[Repository::class];
         $this->activator = $this->app[Activator::class];
