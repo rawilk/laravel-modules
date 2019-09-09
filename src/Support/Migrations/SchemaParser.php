@@ -156,11 +156,26 @@ class SchemaParser implements Arrayable
 
     protected function addRelationColumn(int $key, string $field, string $column): string
     {
-        $relatedColumn = Str::snake(class_basename($field)) . '_id';
+        if ($key === 0) {
+            $relatedColumn = Str::snake(class_basename($field)) . '_id';
 
-        $method = 'integer';
+            return "->unsignedBigInteger('{$relatedColumn}');"
+                . PHP_EOL . "\t\t\t\$table->foreign('{$relatedColumn}')";
+        }
 
-        return "->{$method}('{$relatedColumn}')";
+        if ($key === 1) {
+            return "->references('{$field}')";
+        }
+
+        if ($key === 2) {
+            return "->on('{$field}')";
+        }
+
+        if (Str::contains($field, '(')) {
+            return "->{$field}";
+        }
+
+        return "->{$field}()";
     }
 
     protected function removeColumn(int $key, string $field, string $column): string

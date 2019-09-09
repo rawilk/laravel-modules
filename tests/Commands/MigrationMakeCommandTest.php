@@ -70,6 +70,20 @@ class MigrationMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
     }
 
+    /** @test */
+    public function it_generates_foreign_key_constraints()
+    {
+        $this->artisan('module:make-migration', [
+            'name'     => 'create_posts_table',
+            'module'   => 'Blog',
+            '--fields' => 'belongsTo:user:id:users'
+        ]);
+
+        $file = $this->finder->get($this->modulePath . '/database/migrations/' . $this->getMigrationFile());
+
+        $this->assertMatchesSnapshot($file);
+    }
+
     private function getMigrationFile(): string
     {
         $migrations = $this->finder->allFiles($this->modulePath . '/database/migrations');
