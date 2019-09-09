@@ -242,6 +242,26 @@ class LaravelModuleTest extends BaseTestCase
 
         $this->assertEquals('bar', app('foo'));
     }
+
+    /** @test */
+    public function it_reads_asset_mappings()
+    {
+        $assets = $this->module->getAssets();
+
+        $this->assertCount(2, $assets);
+        $this->assertArrayHasKey('js', $assets);
+        $this->assertArrayHasKey('sass', $assets);
+    }
+
+    /** @test */
+    public function it_gets_specific_asset_mappings()
+    {
+        $js = $this->module->getAssetAttr('js');
+        $sass = $this->module->getAssetAttr('sass');
+
+        $this->assertCount(1, $js);
+        $this->assertCount(1, $sass);
+    }
 }
 
 class TestingModule extends Module

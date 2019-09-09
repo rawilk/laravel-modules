@@ -34,6 +34,7 @@ return [
             'composer'              => 'composer.json',
             'package'               => 'package.json',
             'routes/web'            => 'routes/web.php',
+            'scaffold/assets'       => 'assets.json',
             'scaffold/config'       => 'config/config.php',
             'scaffold/module-views' => 'config/module-views.php',
             'views/index'           => 'resources/views/index.blade.php',

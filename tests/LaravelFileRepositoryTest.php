@@ -278,4 +278,47 @@ class LaravelFileRepositoryTest extends BaseTestCase
 
         $this->assertEquals('epicer', $module->getReverseName());
     }
+
+    /** @test */
+    public function it_finds_all_registered_module_views()
+    {
+        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->enableAllModules();
+
+        $partials = $this->repository->getViewPartials('blog');
+
+        $this->assertCount(2, $partials);
+        $this->assertArrayHasKey('view0', $partials);
+        $this->assertArrayHasKey('view1', $partials);
+    }
+
+    /** @test */
+    public function it_finds_nested_registered_module_views()
+    {
+        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->enableAllModules();
+
+        $partials = $this->repository->getViewPartials('other-module.grouped');
+
+        $this->assertCount(1, $partials);
+        $this->assertArrayHasKey('item1', $partials);
+    }
+
+    /** @test */
+    public function it_gets_registered_module_views_sorted_by_order()
+    {
+        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->enableAllModules();
+
+        $partials = $this->repository->getViewPartials('blog');
+        $view0 = array_pop($partials);
+
+        $this->assertEquals('recipe::view.name.2', $view0['view']);
+        $this->assertEquals(1, $view0['order']);
+    }
+
+    private function enableAllModules(): void
+    {
+        collect($this->repository->all())->each->enable();
+    }
 }

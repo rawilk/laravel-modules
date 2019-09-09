@@ -1,0 +1,8 @@
+{
+    "js": {
+        "js/backend/account/index.js": "js/backend/account/account.js"
+    },
+    "sass": {
+        "scss/auth/auth.scss": "css/auth"
+    }
+}

@@ -113,6 +113,24 @@ abstract class Module
         return $this->get('alias');
     }
 
+    public function getAssets(): array
+    {
+        try {
+            return $this->json('assets.json')->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function getAssetAttr(string $key, $default = null)
+    {
+        try {
+            return $this->json('assets.json')->get($key, $default);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public function getComposerAttr(string $key, $default = null)
     {
         return $this->json('composer.json')->get($key, $default);
