@@ -53,7 +53,7 @@ By default the modules are not loaded automatically. You can autoload the module
 
 **Tip: Be sure sure to run `composer dump-autoload` afterwards.**
 
-## Database:
+## Database
 
 Database installation and activation of modules is still a work in progress and is not ready for production yet. I
 do have plans to finish this functionality in a future release.
