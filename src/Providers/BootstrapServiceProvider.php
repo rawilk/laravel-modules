@@ -3,26 +3,17 @@
 namespace Rawilk\LaravelModules\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Rawilk\LaravelModules\Contracts\Repository;
 
 class BootstrapServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
-        $this->app['modules']->boot();
+        $this->app[Repository::class]->boot();
     }
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    public function register(): void
     {
-        $this->app['modules']->register();
+        $this->app[Repository::class]->register();
     }
 }

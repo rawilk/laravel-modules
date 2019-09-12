@@ -6,31 +6,17 @@ use Rawilk\LaravelModules\Support\Config\GenerateConfigReader;
 
 class LangPublisher extends Publisher
 {
-    /**
-     * Determine if the result message will shown in the console.
-     *
-     * @var bool
-     */
+    /** @var bool */
     protected $showMessage = false;
 
-    /**
-     * Get the destination path.
-     *
-     * @return string
-     */
-    public function getDestinationPath()
+    public function getDestinationPath(): string
     {
         $name = $this->module->getLowerName();
 
         return base_path("resources/lang/{$name}");
     }
 
-    /**
-     * Get the source path.
-     *
-     * @return string
-     */
-    public function getSourcePath()
+    public function getSourcePath(): string
     {
         return $this->getModule()->getExtraPath(
             GenerateConfigReader::read('lang')->getPath()

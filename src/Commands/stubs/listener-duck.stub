@@ -7,13 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class $CLASS$
 {
-    /**
-     * Handle the event.
-     *
-     * @param object $event
-     * @return void
-     */
-    public function handle($event)
+    public function handle($event): void
     {
 
     }

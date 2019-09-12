@@ -14,9 +14,9 @@ class SomeMiddleware
      * @param \\Closure $closure
      * @return mixed
      */
-     public function handle(Request $request, Closure $next)
-     {
-         return $next($request);
-     }
+    public function handle(Request $request, Closure $next)
+    {
+        return $next($request);
+    }
 }
 ';

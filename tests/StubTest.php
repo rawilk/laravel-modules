@@ -2,21 +2,18 @@
 
 namespace Rawilk\LaravelModules\Tests;
 
+use Illuminate\Support\Str;
 use Rawilk\LaravelModules\Support\Stub;
 
 class StubTest extends BaseTestCase
 {
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
+    /** @var \Illuminate\Filesystem\Filesystem */
     private $finder;
 
     /**
      * Setup the test environment.
-     *
-     * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -25,10 +22,8 @@ class StubTest extends BaseTestCase
 
     /**
      * Clean up the testing environment before the next test.
-     *
-     * @return void
      */
-    public function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -46,7 +41,7 @@ class StubTest extends BaseTestCase
             'NAME' => 'Name'
         ]);
 
-        $this->assertTrue(str_contains($stub->getPath(), 'src/Commands/stubs/model.stub'));
+        $this->assertTrue(Str::contains($stub->getPath(), 'src/Commands/stubs/model.stub'));
         $this->assertEquals(['NAME' => 'Name'], $stub->getReplaces());
     }
 
@@ -58,6 +53,7 @@ class StubTest extends BaseTestCase
         ]);
 
         $stub->replace(['VENDOR' => 'MyVendor']);
+
         $this->assertEquals(['VENDOR' => 'MyVendor'], $stub->getReplaces());
     }
 
@@ -67,7 +63,7 @@ class StubTest extends BaseTestCase
         $stub = new Stub('/command.stub', [
             'COMMAND_NAME' => 'my:command',
             'NAMESPACE'    => 'Blog\Commands',
-            'CLASS'        => 'MyCommand',
+            'CLASS'        => 'MyCommand'
         ]);
 
         $stub->saveTo(base_path(), 'my-command.php');
@@ -84,11 +80,11 @@ class StubTest extends BaseTestCase
 
         $stub->setPath('/new-path/');
 
-        $this->assertTrue(str_contains($stub->getPath(), 'Commands/stubs/new-path/'));
+        $this->assertTrue(Str::contains($stub->getPath(), 'Commands/stubs/new-path/'));
     }
 
     /** @test */
-    public function it_uses_a_default_stub_if_not_provided_an_override()
+    public function it_uses_a_default_stub_if_override_does_not_exist()
     {
         $stub = new Stub('/command.stub', [
             'COMMAND_NAME' => 'my:command',
@@ -104,10 +100,10 @@ class StubTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_uses_an_override_stub_if_provided_one()
+    public function it_uses_an_override_stub_if_one_exists()
     {
         $stub = new Stub('/model.stub', [
-            'NAME' => 'Name',
+            'NAME' => 'name'
         ]);
 
         $stub->setBasePath(__DIR__ . '/stubs');

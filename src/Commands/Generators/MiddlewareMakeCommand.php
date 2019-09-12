@@ -10,65 +10,42 @@ class MiddlewareMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'name';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-middleware
                             {name : The name of the middleware}
-                            {module? : The name of the module to create the middleware for}';
+                            {module? : The name of the module to make a new middleware for}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'create a new middleware class for the specified module';
+    /** @var string */
+    protected $description = 'Create a new middleware class for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
+
+        return $module->config('paths.generator.middleware.namespace') ?: $module->config('paths.generator.middleware.path', 'Http/Middleware');
+    }
+
+    protected function getDestinationFilePath(): string
+    {
+        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+
+        $middlewarePath = GenerateConfigReader::read('middleware');
+
+        return $path . $middlewarePath->getPath() . '/' . $this->getFileName() . '.php';
+    }
+
+    protected function getTemplateContents(): string
+    {
+        /** @var \Rawilk\LaravelModules\Module $module */
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/middleware.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
-    }
-
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
-    {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-
-        $middlewarePath = GenerateConfigReader::read('filter');
-
-        return $path . $middlewarePath->getPath() . '/' . $this->getFileName() . '.php';
-    }
-
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
-    {
-        return $this->laravel['modules']->config('paths.generator.filter.path', 'Http/Middleware');
     }
 }

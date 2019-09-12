@@ -23,52 +23,38 @@ use Rawilk\LaravelModules\Commands\Generators\RouteProviderMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\RuleMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\SeedMakeCommand;
 use Rawilk\LaravelModules\Commands\Generators\TestMakeCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\DisableCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\DumpCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\EnableCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\InstallCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\ListCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\MigrateCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\MigrateRefreshCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\MigrateResetCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\MigrateRollbackCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\MigrateStatusCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\PublishCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\PublishConfigurationCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\PublishMigrationCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\PublishTranslationCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\SeedCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\SetupCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\UnUseCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\UpdateCommand;
-use Rawilk\LaravelModules\Commands\LaravelModules\UseCommand;
+use Rawilk\LaravelModules\Commands\Other\DisableCommand;
+use Rawilk\LaravelModules\Commands\Other\DumpCommand;
+use Rawilk\LaravelModules\Commands\Other\EnableCommand;
+use Rawilk\LaravelModules\Commands\Other\InstallCommand;
+use Rawilk\LaravelModules\Commands\Other\ListCommand;
+use Rawilk\LaravelModules\Commands\Other\MigrateCommand;
+use Rawilk\LaravelModules\Commands\Other\MigrateRefreshCommand;
+use Rawilk\LaravelModules\Commands\Other\MigrateResetCommand;
+use Rawilk\LaravelModules\Commands\Other\MigrateRollbackCommand;
+use Rawilk\LaravelModules\Commands\Other\PublishCommand;
+use Rawilk\LaravelModules\Commands\Other\PublishConfigurationCommand;
+use Rawilk\LaravelModules\Commands\Other\PublishMigrationCommand;
+use Rawilk\LaravelModules\Commands\Other\PublishTranslationCommand;
+use Rawilk\LaravelModules\Commands\Other\SeedCommand;
+use Rawilk\LaravelModules\Commands\Other\UnUseCommand;
+use Rawilk\LaravelModules\Commands\Other\UpdateCommand;
+use Rawilk\LaravelModules\Commands\Other\UseCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
-     * The generator commands to register.
-     *
-     * @var array
-     */
-    protected $generatorCommands = [
+    protected static $generatorCommands = [
         CommandMakeCommand::class,
         ControllerMakeCommand::class,
         EventMakeCommand::class,
         FactoryMakeCommand::class,
-        ListenerMakeCommand::class,
-        ModuleMakeCommand::class,
         JobMakeCommand::class,
+        ListenerMakeCommand::class,
         MailMakeCommand::class,
         MiddlewareMakeCommand::class,
         MigrationMakeCommand::class,
         ModelMakeCommand::class,
+        ModuleMakeCommand::class,
         PolicyMakeCommand::class,
         ProviderMakeCommand::class,
         RepositoryMakeCommand::class,
@@ -80,12 +66,7 @@ class ConsoleServiceProvider extends ServiceProvider
         TestMakeCommand::class,
     ];
 
-    /**
-     * The laravel modules commands to register.
-     *
-     * @var array
-     */
-    protected $laravelModulesCommands = [
+    protected static $otherCommands = [
         DisableCommand::class,
         DumpCommand::class,
         EnableCommand::class,
@@ -95,28 +76,26 @@ class ConsoleServiceProvider extends ServiceProvider
         MigrateRefreshCommand::class,
         MigrateResetCommand::class,
         MigrateRollbackCommand::class,
-        MigrateStatusCommand::class,
         PublishCommand::class,
         PublishConfigurationCommand::class,
         PublishMigrationCommand::class,
         PublishTranslationCommand::class,
         SeedCommand::class,
-        SetupCommand::class,
         UnUseCommand::class,
         UpdateCommand::class,
         UseCommand::class,
     ];
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
-            $this->commands($this->laravelModulesCommands);
-            $this->commands($this->generatorCommands);
+            $this->commands(static::$generatorCommands);
+            $this->commands(static::$otherCommands);
         }
+    }
+
+    public function provides(): array
+    {
+        return array_merge(static::$generatorCommands, static::$otherCommands);
     }
 }

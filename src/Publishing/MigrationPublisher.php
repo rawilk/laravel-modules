@@ -4,19 +4,13 @@ namespace Rawilk\LaravelModules\Publishing;
 
 use Rawilk\LaravelModules\Migrations\Migrator;
 
-class MigrationPublisher extends AssetPublisher
+class MigrationPublisher extends Publisher
 {
-    /**
-     * The migrator instance.
-     *
-     * @var \Rawilk\LaravelModules\Migrations\Migrator
-     */
+    /** @var \Rawilk\LaravelModules\Migrations\Migrator */
     private $migrator;
 
     /**
-     * Create a new class instance.
-     *
-     * @param \Rawilk\LaravelModules\Migrations\Migrator
+     * @param \Rawilk\LaravelModules\Migrations\Migrator $migrator
      */
     public function __construct(Migrator $migrator)
     {
@@ -25,22 +19,12 @@ class MigrationPublisher extends AssetPublisher
         parent::__construct($migrator->getModule());
     }
 
-    /**
-     * Get the destination path.
-     *
-     * @return string
-     */
-    public function getDestinationPath()
+    public function getDestinationPath(): string
     {
         return $this->repository->config('paths.migration');
     }
 
-    /**
-     * Get the source path.
-     *
-     * @return string
-     */
-    public function getSourcePath()
+    public function getSourcePath(): string
     {
         return $this->migrator->getPath();
     }

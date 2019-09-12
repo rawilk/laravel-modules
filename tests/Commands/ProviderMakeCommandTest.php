@@ -3,78 +3,30 @@
 namespace Rawilk\LaravelModules\Tests\Commands;
 
 use Rawilk\LaravelModules\Tests\BaseTestCase;
+use Rawilk\LaravelModules\Tests\Concerns\TestsGenerators;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class ProviderMakeCommandTest extends BaseTestCase
 {
-    use MatchesSnapshots;
-
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-
-    /**
-     * @var string
-     */
-    private $modulePath;
-
-    /**
-     * Setup the test environment.
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->modulePath = base_path('Modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true]);
-    }
-
-    /**
-     * Clean up the testing environment before the next test.
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        $this->finder->deleteDirectory($this->modulePath);
-
-        parent::tearDown();
-    }
+    use MatchesSnapshots, TestsGenerators;
 
     /** @test */
     public function it_generates_a_service_provider()
     {
         $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Providers/MyBlogServiceProvider.php'));
-    }
+        $path = $this->modulePath . '/Providers/MyBlogServiceProvider.php';
 
-    /** @test */
-    public function it_generates_the_correct_file_with_content()
-    {
-        $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
-
-        $file = $this->finder->get($this->modulePath . '/Providers/MyBlogServiceProvider.php');
-
-        $this->assertMatchesSnapshot($file);
+        $this->assertTrue(is_file($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
     }
 
     /** @test */
     public function it_generates_a_master_service_provider_with_resource_loading()
     {
-        $this->artisan('module:make-provider', [
-            'name'     => 'BlogServiceProvider',
-            'module'   => 'Blog',
-            '--master' => true
-        ]);
+        $path = $this->generateMaster();
 
-        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
-
-        $this->assertMatchesSnapshot($file);
+        $this->assertMatchesSnapshot($this->finder->get($path));
     }
 
     /** @test */
@@ -82,30 +34,41 @@ class ProviderMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.migration', 'migrations');
 
-        $this->artisan('module:make-provider', [
-            'name'     => 'BlogServiceProvider',
-            'module'   => 'Blog',
-            '--master' => true
-        ]);
+        $path = $this->generateMaster(true);
 
-        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
-
-        $this->assertMatchesSnapshot($file);
+        $this->assertMatchesSnapshot($this->finder->get($path));
     }
 
     /** @test */
     public function it_can_change_the_default_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.provider.path', 'OtherNamespace');
+        $this->app['config']->set('modules.paths.generator.provider.path', 'CustomPath');
 
-        $this->artisan('module:make-provider', [
-            'name'     => 'BlogServiceProvider',
-            'module'   => 'Blog',
-            '--master' => true
-        ]);
+        $path = $this->generateMaster();
 
-        $file = $this->finder->get($this->modulePath . '/OtherNamespace/BlogServiceProvider.php');
+        $this->assertMatchesSnapshot($this->finder->get($path));
+    }
 
-        $this->assertMatchesSnapshot($file);
+    /** @test */
+    public function it_can_change_the_default_namespace_specifically()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.namespace', 'CustomPath');
+
+        $path = $this->generateMaster(true);
+
+        $this->assertMatchesSnapshot($this->finder->get($path));
+    }
+
+    private function generateMaster(bool $deleteFirst = false): string
+    {
+        $providerPath = $this->modulePath . '/' . $this->app['config']->get('modules.paths.generator.provider.path') . '/BlogServiceProvider.php';
+
+        if ($deleteFirst) {
+            $this->finder->exists($providerPath) && $this->finder->delete($providerPath);
+        }
+
+        $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+
+        return $providerPath;
     }
 }

@@ -12,8 +12,8 @@ class $CLASS$ extends Resource
      * @param \Illuminate\Http\Request $request
      * @return array
      */
-     public function toArray($request)
-     {
+    public function toArray(): array
+    {
         return parent::toArray($request);
-     }
+    }
 }

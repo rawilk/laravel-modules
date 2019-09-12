@@ -2,24 +2,13 @@
 
 namespace $NAMESPACE$;
 
+use Config;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
 class $CLASS$ extends ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
         $this->registerTranslations();
         $this->registerConfig();
@@ -28,24 +17,20 @@ class $CLASS$ extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../$MIGRATIONS_PATH$');
     }
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    public function register(): void
     {
+        $this->app->register(RouteServiceProvider::class);
     }
 
-    /**
-     * Register config.
-     *
-     * @return void
-     */
-    protected function registerConfig()
+    public function provides(): array
+    {
+        return [];
+    }
+
+    private function registerConfig(): void
     {
         $this->publishes([
-            __DIR__ . '/../$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php'),
+            __DIR__ . '/../$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php')
         ], 'config');
 
         $this->mergeConfigFrom(
@@ -53,12 +38,25 @@ class $CLASS$ extends ServiceProvider
         );
     }
 
-    /**
-     * Register views.
-     *
-     * @return void
-     */
-    public function registerViews()
+    private function registerFactories(): void
+    {
+        if (! $this->app->environment('production') && $this->app->runningInConsole()) {
+            app(Factory::class)->load(__DIR__ . '/../$FACTORIES_PATH$');
+        }
+    }
+
+    private function registerTranslations(): void
+    {
+        $langPath = resource_path('lang/modules/$LOWER_NAME$');
+
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
+        } else {
+            $this->loadTranslationsFrom(__DIR__  .'/../$PATH_LANG$', '$LOWER_NAME$');
+        }
+    }
+
+    private function registerViews(): void
     {
         $viewPath = resource_path('views/modules/$LOWER_NAME$');
 
@@ -66,48 +64,10 @@ class $CLASS$ extends ServiceProvider
 
         $this->publishes([
             $sourcePath => $viewPath
-        ],'views');
+        ], 'views');
 
-        $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/$LOWER_NAME$';
-        }, \Config::get('view.paths')), [$sourcePath]), '$LOWER_NAME$');
-    }
-
-    /**
-     * Register translations.
-     *
-     * @return void
-     */
-    public function registerTranslations()
-    {
-        $langPath = resource_path('lang/modules/$LOWER_NAME$');
-
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
-        } else {
-            $this->loadTranslationsFrom(__DIR__ . '/../$PATH_LANG$', '$LOWER_NAME$');
-        }
-    }
-
-    /**
-     * Register an additional directory of factories.
-     *
-     * @return void
-     */
-    public function registerFactories()
-    {
-        if (! app()->environment('production')) {
-            app(Factory::class)->load(__DIR__ . '/../$FACTORIES_PATH$');
-        }
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [];
+        $this->loadViewsFrom(array_merge(array_map(static function ($path) {
+            return "{$path}/modules/$LOWER_NAME$";
+        }, Config::get('view.paths')), [$sourcePath]), '$LOWER_NAME$');
     }
 }

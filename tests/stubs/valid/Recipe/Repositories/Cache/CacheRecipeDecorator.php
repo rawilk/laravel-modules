@@ -10,7 +10,6 @@ class CacheRecipeDecorator extends BaseCacheDecorator implements RecipeRepositor
     public function __construct(RecipeRepository $recipe)
     {
         parent::__construct();
-
         $this->entityName = 'recipe.recipes';
         $this->repository = $recipe;
     }

@@ -2,6 +2,7 @@
 
 namespace Rawilk\LaravelModules\Commands\Generators;
 
+use Illuminate\Support\Str;
 use Rawilk\LaravelModules\Support\Config\GenerateConfigReader;
 use Rawilk\LaravelModules\Support\Stub;
 use Rawilk\LaravelModules\Traits\ModuleCommands;
@@ -10,73 +11,37 @@ class ModelMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'model';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-model
                             {model : The name of the model}
                             {module? : The name of the module to create the model for}
                             {--fillable= : The fillable attributes}
-                            {--base_class= : Override the default base class}
+                            {--base_class= : Override the default base model class (from config)}
                             {--table= : The name of the database table}
                             {--m|migration : Create a migration for the model as well}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new model for the specified module';
+    /** @var string */
+    protected $description = 'Create a new model for the specified module.';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): void
     {
         parent::handle();
 
-        $this->handleOptionalMigrationOption();
+        $this->handleOptionalMigration();
     }
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
 
-        return (new Stub('/model.stub', [
-            'FILLABLE'         => $this->getFillable(),
-            'NAME'             => $this->getModelName(),
-            'NAMESPACE'        => $this->getClassNamespace($module),
-            'CLASS'            => $this->getClass(),
-            'LOWER_NAME'       => $module->getLowerName(),
-            'MODULE'           => $this->getModuleName(),
-            'STUDLY_NAME'      => $module->getStudlyName(),
-            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
-            'TABLE'            => $this->createMigrationName(),
-            'BASE_CLASS'       => $this->getBaseClass('model'),
-            'BASE_CLASS_SHORT' => $this->getBaseClass('model', true),
-        ]))->render();
+        return $module->config('paths.generator.model.namespace') ?: $module->config('paths.generator.model.path', 'Models');
     }
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -85,17 +50,29 @@ class ModelMakeCommand extends GeneratorCommand
         return $path . $modelPath->getPath() . '/' . $this->getModelName() . '.php';
     }
 
-    /**
-     * Create a proper migration name.
-     *
-     * @example ProductDetail => product_details
-     * @example Product => products
-     * @return string
-     */
-    private function createMigrationName()
+    protected function getTemplateContents(): string
     {
-        if (! is_null($this->option('table'))) {
-            return $this->option('table');
+        /** @var \Rawilk\LaravelModules\Module $module */
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub('/model.stub', [
+            'FILLABLE'         => $this->getFillable(),
+            'NAME'             => $this->getModelName(),
+            'NAMESPACE'        => $this->getClassNamespace($module),
+            'CLASS'            => $this->getClass(),
+            'LOWER_NAME'       => $module->getLowerName(),
+            'STUDLY_NAME'      => $module->getStudlyName(),
+            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
+            'TABLE'            => $this->createMigrationName(),
+            'BASE_CLASS'       => $this->getBaseClass('model'),
+            'BASE_CLASS_SHORT' => $this->getBaseClass('model', true),
+        ]))->render();
+    }
+
+    private function createMigrationName(): string
+    {
+        if ($table = $this->option('table')) {
+            return $table;
         }
 
         $pieces = preg_split(
@@ -107,21 +84,35 @@ class ModelMakeCommand extends GeneratorCommand
 
         $name = '';
         $count = count($pieces);
+
         foreach ($pieces as $index => $piece) {
             if ($index + 1 < $count) {
                 $name .= strtolower($piece) . '_';
             } else {
-                $name .= str_plural(strtolower($piece));
+                $name .= Str::plural(strtolower($piece));
             }
         }
 
         return $name;
     }
 
-    /**
-     * Create a migration for the model if specified.
-     */
-    private function handleOptionalMigrationOption()
+    private function getFillable(): string
+    {
+        $fillable = $this->option('fillable');
+
+        if ($fillable !== null) {
+            return str_replace(['"', ','], ["'", ', '], json_encode(explode(',', $fillable)));
+        }
+
+        return '[]';
+    }
+
+    private function getModelName(): string
+    {
+        return Str::studly($this->argument($this->argumentName));
+    }
+
+    private function handleOptionalMigration(): void
     {
         if ($this->option('migration')) {
             $migrationName = 'create_' . $this->createMigrationName() . '_table';
@@ -131,43 +122,5 @@ class ModelMakeCommand extends GeneratorCommand
                 'module' => $this->argument('module')
             ]);
         }
-    }
-
-    /**
-     * Get the model name.
-     *
-     * @return string
-     */
-    private function getModelName()
-    {
-        return studly_case($this->argument($this->argumentName));
-    }
-
-    /**
-     * Get the fillable attributes.
-     *
-     * @return string
-     */
-    private function getFillable()
-    {
-        $fillable = $this->option('fillable');
-
-        if (! is_null($fillable)) {
-            $fillable = str_replace('"', "'", json_encode(explode(',', $fillable)));
-
-            return str_replace(',', ', ', $fillable);
-        }
-
-        return '[]';
-    }
-
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
-    {
-        return $this->laravel['modules']->config('paths.generator.model.path', 'Models');
     }
 }

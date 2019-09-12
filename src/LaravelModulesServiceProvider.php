@@ -2,56 +2,57 @@
 
 namespace Rawilk\LaravelModules;
 
+use Rawilk\LaravelModules\Contracts\Activator;
+use Rawilk\LaravelModules\Contracts\Repository;
+use Rawilk\LaravelModules\Laravel\LaravelFileRepository;
 use Rawilk\LaravelModules\Support\Stub;
 
-class LaravelModulesServiceProvider extends ModulesServiceProvider
+class LaravelModulesServiceProvider extends ModuleServiceProvider
 {
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
         $this->registerNamespaces();
+        $this->registerModuleModel();
         $this->registerModules();
+        $this->publishMigrations();
     }
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    public function register(): void
     {
         $this->registerServices();
         $this->setupStubPath();
         $this->registerProviders();
     }
 
-    /**
-     * Setup the stub path.
-     */
-    protected function setupStubPath()
+    public function setupStubPath(): void
     {
         Stub::setBasePath(__DIR__ . '/Commands/stubs');
 
-        $this->app->booted(function ($app) {
-            if ($app['modules']->config('stubs.enabled')) {
-                Stub::setBasePath($app['modules']->config('stubs.path'));
+        $this->app->booted(static function ($app) {
+            /** @var \Rawilk\LaravelModules\Contracts\Repository $moduleRepository */
+            $moduleRepository = $app[Repository::class];
+
+            if ($moduleRepository->config('stubs.enabled')) {
+                Stub::setBasePath($moduleRepository->config('stubs.path'));
             }
         });
     }
 
-    /**
-     * Register the service provider.
-     */
-    protected function registerServices()
+    protected function registerServices(): void
     {
-        $this->app->singleton('modules', function ($app) {
+        $this->app->singleton(Repository::class, static function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
-            return new \Rawilk\LaravelModules\Laravel\Repository($app, $path);
+            return new LaravelFileRepository($app, $path);
         });
+
+        $this->app->singleton(Activator::class, static function ($app) {
+            $activator = $app['config']->get('modules.activator');
+            $class = $app['config']->get('modules.activators.' . $activator)['class'];
+
+            return new $class($app);
+        });
+
+        $this->app->alias(Repository::class, 'modules');
     }
 }

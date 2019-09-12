@@ -5,28 +5,69 @@ namespace Rawilk\LaravelModules\Tests;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Rawilk\LaravelModules\LaravelModulesServiceProvider;
 
-class BaseTestCase extends OrchestraTestCase
+abstract class BaseTestCase extends OrchestraTestCase
 {
     /**
      * Setup the test environment.
-     *
-     * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->app['files']->deleteDirectory(base_path('Modules'));
-        $this->withoutMockingConsoleOutput();
+        if (method_exists($this, 'withoutMockingConsoleOutput')) {
+            $this->withoutMockingConsoleOutput();
+        }
+
+        if ($this->app['files']->isDirectory($dir = base_path('Modules'))) {
+            $this->app['files']->delete($dir);
+        }
+
+        $this->setUpDatabase();
     }
 
     /**
-     * Reset the database.
+     * Define environment setup.
+     *
+     * @param \Illuminate\Foundation\Application $app
      */
-    private function resetDatabase()
+    protected function getEnvironmentSetUp($app): void
     {
-        $this->artisan('migrate:reset', [
-            '--database' => 'sqlite'
+        $app['config']->set('database.default', 'sqlite');
+        $app['config']->set('database.connections.sqlite', [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => ''
+        ]);
+
+        $app['config']->set('modules.paths', [
+            'modules' => base_path('Modules'),
+            'assets' => public_path('modules'),
+            'migration' => base_path('database/migrations'),
+            'generator' => [
+                'assets'       => ['path' => 'resources/assets', 'generate' => true],
+                'command'      => ['path' => 'Console', 'generate' => true],
+                'config'       => ['path' => 'config', 'generate' => true],
+                'controller'   => ['path' => 'Http/Controllers', 'generate' => true],
+                'emails'       => ['path' => 'Mail', 'generate' => true],
+                'event'        => ['path' => 'Events', 'generate' => true],
+                'factory'      => ['path' => 'database/factories', 'generate' => true],
+                'jobs'         => ['path' => 'Jobs', 'generate' => true],
+                'lang'         => ['path' => 'resources/lang', 'generate' => true],
+                'listener'     => ['path' => 'Listeners', 'generate' => true],
+                'middleware'   => ['path' => 'Http/Middleware', 'generate' => true],
+                'migration'    => ['path' => 'database/migrations', 'generate' => true],
+                'model'        => ['path' => 'Models', 'generate' => true],
+                'policies'     => ['path' => 'Policies', 'generate' => true],
+                'provider'     => ['path' => 'Providers', 'generate' => true],
+                'repository'   => ['path' => 'Repositories', 'generate' => true],
+                'request'      => ['path' => 'Http/Requests', 'generate' => true],
+                'resource'     => ['path' => 'Transformers', 'generate' => true],
+                'rules'        => ['path' => 'Rules', 'generate' => true],
+                'seeder'       => ['path' => 'database/seeds', 'generate' => true],
+                'test'         => ['path' => 'tests/Unit', 'generate' => true],
+                'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
+                'views'        => ['path' => 'resources/views', 'generate' => true],
+            ]
         ]);
     }
 
@@ -36,68 +77,17 @@ class BaseTestCase extends OrchestraTestCase
      * @param \Illuminate\Foundation\Application  $app
      * @return array
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             LaravelModulesServiceProvider::class
         ];
     }
 
-    /**
-     * Define environment setup.
-     *
-     * @param \Illuminate\Foundation\Application $app
-     * @return void
-     */
-    protected function getEnvironmentSetUp($app)
+    private function setUpDatabase(): void
     {
-        $app['config']->set('database.default', 'sqlite');
+        include_once __DIR__ . '/../database/migrations/create_modules_table.php.stub';
 
-        $app['config']->set('database.connections.sqlite', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => '',
-        ]);
-
-        $app['config']->set('modules.paths.modules', base_path('Modules'));
-
-        $app['config']->set('modules.paths', [
-            'modules'   => base_path('Modules'),
-            'assets'    => public_path('modules'),
-            'migration' => base_path('database/migrations'),
-            'generator' => [
-                'assets'        => ['path' => 'assets', 'generate' => true],
-                'config'        => ['path' => 'config', 'generate' => true],
-                'command'       => ['path' => 'Console', 'generate' => true],
-                'event'         => ['path' => 'Events', 'generate' => true],
-                'listener'      => ['path' => 'Listeners', 'generate' => true],
-                'migration'     => ['path' => 'database/migrations', 'generate' => true],
-                'factory'       => ['path' => 'database/factories', 'generate' => true],
-                'model'         => ['path' => 'Models', 'generate' => true],
-                'repository'    => ['path' => 'Repositories', 'generate' => true],
-                'seeder'        => ['path' => 'database/seeds', 'generate' => true],
-                'controller'    => ['path' => 'Http/Controllers', 'generate' => true],
-                'filter'        => ['path' => 'Http/Middleware', 'generate' => true],
-                'request'       => ['path' => 'Http/Requests', 'generate' => true],
-                'provider'      => ['path' => 'Providers', 'generate' => true],
-                'lang'          => ['path' => 'resources/lang', 'generate' => true],
-                'views'         => ['path' => 'resources/views', 'generate' => true],
-                'policies'      => ['path' => 'Policies', 'generate' => true],
-                'rules'         => ['path' => 'Rules', 'generate' => true],
-                'test'          => ['path' => 'Tests', 'generate' => true],
-                'jobs'          => ['path' => 'Jobs', 'generate' => true],
-                'emails'        => ['path' => 'Mail', 'generate' => true],
-                'notifications' => ['path' => 'Notifications', 'generate' => true],
-                'resource'      => ['path' => 'Transformers', 'generate' => true],
-            ],
-        ]);
-    }
-
-    /**
-     * Set up the database.
-     */
-    protected function setUpDatabase()
-    {
-        $this->resetDatabase();
+        (new \CreateModulesTable())->up();
     }
 }

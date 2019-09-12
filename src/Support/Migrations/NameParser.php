@@ -4,93 +4,52 @@ namespace Rawilk\LaravelModules\Support\Migrations;
 
 class NameParser
 {
-    /**
-     * The migration name.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * The migration data.
-     *
-     * @var array
-     */
-    protected $data = [];
-
-    /**
-     * The available schema actions.
-     *
-     * @var array
-     */
-    protected $actions = [
+    /** @var array */
+    protected static $actions = [
+        'add'    => ['add', 'update', 'append', 'insert'],
         'create' => ['create', 'make'],
         'delete' => ['delete', 'remove'],
-        'add'    => ['add', 'update', 'append', 'insert'],
         'drop'   => ['destroy', 'drop']
     ];
 
+    /** @var array */
+    protected $data = [];
+
+    /** @var string */
+    protected $name;
+
     /**
-     * Create a new class instance.
-     *
      * @param string $name
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
         $this->data = $this->fetchData();
     }
 
-    /**
-     * Get original migration name.
-     *
-     * @return string
-     */
-    public function getOriginalName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Get the schema type or action.
-     *
-     * @return string
-     */
-    public function getAction()
+    public function getAction(): string
     {
         return head($this->data);
     }
 
-    /**
-     * Get the table to use for the migration.
-     *
-     * @return string
-     */
-    public function getTableName()
+    public function getData(): array
     {
-        $matches = array_reverse($this->getMatches());
-
-        return array_shift($matches);
+        return $this->data;
     }
 
-    /**
-     * Get matches from regex.
-     *
-     * @return array
-     */
-    public function getMatches()
+    public function getMatches(): array
     {
         preg_match($this->getPattern(), $this->name, $matches);
 
         return $matches;
     }
 
-    /**
-     * Get the name regex pattern.
-     *
-     * @return string
-     */
-    public function getPattern()
+    public function getOriginalName(): string
+    {
+        return $this->name;
+    }
+
+    public function getPattern(): string
     {
         switch ($action = $this->getAction()) {
             case 'add':
@@ -107,74 +66,40 @@ class NameParser
         }
     }
 
-    /**
-     * Convert the migration name to an array of data.
-     *
-     * @return array
-     */
-    protected function fetchData()
+    public function getTableName(): string
     {
-        return explode('_', $this->name);
+        $matches = array_reverse($this->getMatches());
+
+        return array_shift($matches);
     }
 
-    /**
-     * Get the migration data.
-     *
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * Determine if the given type is the same as the current schema action or type.
-     *
-     * @param $type
-     * @return bool
-     */
-    public function is($type)
+    public function is(string $type): bool
     {
         return $type === $this->getAction();
     }
 
-    /**
-     * Determine if the current schema action is an adding action.
-     *
-     * @return bool
-     */
-    public function isAdd()
+    public function isAdd(): bool
     {
-        return in_array($this->getAction(), $this->actions['add']);
+        return in_array($this->getAction(), static::$actions['add'], true);
     }
 
-    /**
-     * Determine if the current schema action is a deleting action.
-     *
-     * @return bool
-     */
-    public function isDelete()
+    public function isCreate(): bool
     {
-        return in_array($this->getAction(), $this->actions['delete']);
+        return in_array($this->getAction(), static::$actions['create'], true);
     }
 
-    /**
-     * Determine if the current schema action is a creating action.
-     *
-     * @return bool
-     */
-    public function isCreate()
+    public function isDelete(): bool
     {
-        return in_array($this->getAction(), $this->actions['create']);
+        return in_array($this->getAction(), static::$actions['delete'], true);
     }
 
-    /**
-     * Determine if the current schema action is a dropping action.
-     *
-     * @return bool
-     */
-    public function isDrop()
+    public function isDrop(): bool
     {
-        return in_array($this->getAction(), $this->actions['drop']);
+        return in_array($this->getAction(), static::$actions['drop'], true);
+    }
+
+    protected function fetchData(): array
+    {
+        return explode('_', $this->name);
     }
 }

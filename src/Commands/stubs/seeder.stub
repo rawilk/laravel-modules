@@ -9,13 +9,11 @@ class $NAME$ extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-     public function run()
-     {
-         Model::unguard();
+    public function run(): void
+    {
+        Model::unguard();
 
-         // $this->call('OtherTableSeeder');
-     }
+        // $this->call('OtherTableSeeder');
+    }
 }

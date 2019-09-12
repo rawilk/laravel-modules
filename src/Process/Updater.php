@@ -6,48 +6,39 @@ use Rawilk\LaravelModules\Module;
 
 class Updater extends Runner
 {
-    /**
-     * Update the dependencies for the specified module by given the module name.
-     *
-     * @param string $module
-     * @throws \Rawilk\LaravelModules\Exceptions\ModuleNotFoundException
-     */
-    public function update($module)
+    public function update(string $name): void
     {
-        $module = $this->module->findOrFail($module);
+        $module = $this->module->findOrFail($name);
 
         chdir(base_path());
 
-        $this->installRequires($module);
-        $this->installDevRequires($module);
-        $this->copyScriptsToMainComposerJson($module);
+        $this->installRequires($module)
+            ->installDevRequires($module)
+            ->copyScriptsToMainComposerJson($module);
     }
 
-    /**
-     * Install any required packages for the module.
-     *
-     * @param \Rawilk\LaravelModules\Module $module
-     */
-    private function installRequires(Module $module)
+    private function copyScriptsToMainComposerJson(Module $module): self
     {
-        $packages = $module->getComposerAttr('require', []);
+        $scripts = $module->getComposerAttr('scripts', []);
 
-        $concatenatedPackages = '';
-        foreach ($packages as $name => $version) {
-            $concatenatedPackages .= "\"{$name}:{$version}\" ";
-        }
+        $composer = json_decode(file_get_contents(base_path('composer.json')), true);
 
-        if (! empty($concatenatedPackages)) {
-            $this->run("composer require {$concatenatedPackages}");
+        foreach ($scripts as $key => $script) {
+            if (array_key_exists($key, $composer['scripts'])) {
+                $composer['scripts'][$key] = array_unique(array_merge($composer['scripts'][$key], $script));
+
+                continue;
+            }
+
+            $composer['scripts'] = array_merge($composer['scripts'], [$key => $script]);
         }
+        
+        file_put_contents(base_path('composer.json'), json_encode($composer, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
+        return $this;
     }
 
-    /**
-     * Install any dev dependencies required by the module.
-     *
-     * @param \Rawilk\LaravelModules\Module $module
-     */
-    private function installDevRequires(Module $module)
+    private function installDevRequires(Module $module): self
     {
         $devPackages = $module->getComposerAttr('require-dev', []);
 
@@ -59,28 +50,23 @@ class Updater extends Runner
         if (! empty($concatenatedPackages)) {
             $this->run("composer require --dev {$concatenatedPackages}");
         }
+
+        return $this;
     }
 
-    /**
-     * Copy any scripts to the main composer json file.
-     *
-     * @param \Rawilk\LaravelModules\Module $module
-     */
-    private function copyScriptsToMainComposerJson(Module $module)
+    private function installRequires(Module $module): self
     {
-        $scripts = $module->getComposerAttr('scripts', []);
+        $packages = $module->getComposerAttr('require', []);
 
-        $composer = json_decode(file_get_contents(base_path('composer.json')), true);
-
-        foreach ($scripts as $key => $script) {
-            if (array_key_exists($key, $composer['scripts'])) {
-                $composer['scripts'][$key] = array_unique(array_merge($composer['scripts'][$key], $script));
-                continue;
-            }
-
-            $composer['scripts'] = array_merge($composer['scripts'], [$key => $script]);
+        $concatenatedPackages = '';
+        foreach ($packages as $name => $version) {
+            $concatenatedPackages .= "\"{$name}:{$version}\" ";
         }
 
-        file_put_contents(base_path('composer.json'), json_encode($composer, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        if (! empty($concatenatedPackages)) {
+            $this->run("composer require {$concatenatedPackages}");
+        }
+
+        return $this;
     }
 }

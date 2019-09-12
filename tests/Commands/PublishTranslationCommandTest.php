@@ -3,17 +3,17 @@
 namespace Rawilk\LaravelModules\Tests\Commands;
 
 use Rawilk\LaravelModules\Tests\BaseTestCase;
-use Rawilk\LaravelModules\Tests\Commands\Traits\SetsCommandTestsUp;
+use Rawilk\LaravelModules\Tests\Concerns\TestsGenerators;
 
 class PublishTranslationCommandTest extends BaseTestCase
 {
-    use SetsCommandTestsUp;
+    use TestsGenerators;
 
     /** @test */
     public function it_publishes_module_translations()
     {
         $this->artisan('module:publish-translation', ['module' => 'Blog']);
 
-        $this->assertTrue(is_dir(base_path('resources/lang/blog')));
+        $this->assertDirectoryExists(base_path('resources/lang/blog'));
     }
 }

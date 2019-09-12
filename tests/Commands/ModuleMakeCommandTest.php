@@ -3,6 +3,8 @@
 namespace Rawilk\LaravelModules\Tests\Commands;
 
 use Illuminate\Support\Facades\Artisan;
+use Rawilk\LaravelModules\Contracts\Activator;
+use Rawilk\LaravelModules\Contracts\Repository;
 use Rawilk\LaravelModules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -10,40 +12,43 @@ class ModuleMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
 
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
+    /** @var \Illuminate\Filesystem\Filesystem */
     private $finder;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $modulePath;
+
+    /** @var \Rawilk\LaravelModules\Contracts\Activator */
+    private $activator;
+
+    /** @var \Rawilk\LaravelModules\Contracts\Repository */
+    private $repository;
 
     /**
      * Setup the test environment.
-     *
-     * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->modulePath = base_path('Modules/Blog');
         $this->finder = $this->app['files'];
+        $this->repository = $this->app[Repository::class];
+        $this->activator = $this->app[Activator::class];
     }
 
     /**
      * Clean up the testing environment before the next test.
-     *
-     * @return void
      */
-    public function tearDown()
+    protected function tearDown(): void
     {
         $this->finder->deleteDirectory($this->modulePath);
+
         if ($this->finder->isDirectory(base_path('Modules/ModuleName'))) {
             $this->finder->deleteDirectory(base_path('Modules/ModuleName'));
         }
+
+        $this->activator->reset();
 
         parent::tearDown();
     }
@@ -51,28 +56,46 @@ class ModuleMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_module()
     {
-        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $exitCode = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertTrue(is_dir($this->modulePath));
-        $this->assertSame(0, $code);
+        $this->assertEquals(0, $exitCode);
+        $this->assertDirectoryExists($this->modulePath);
     }
 
     /** @test */
-    public function it_generates_a_route_file()
+    public function it_generates_module_folders()
     {
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->generateModule();
 
-        $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.routes');
+        foreach (config('modules.paths.generator') as $directory) {
+            $this->assertDirectoryExists($this->modulePath . '/' . $directory['path']);
+        }
+    }
 
+    /** @test */
+    public function it_generates_module_files()
+    {
+        $this->generateModule();
+
+        foreach (config('modules.stubs.files') as $file) {
+            $path = $this->modulePath . '/' . $file;
+
+            $this->assertTrue($this->finder->exists($path), "[{$file}] does not exist!");
+        }
+
+        $path = $this->modulePath . '/module.json';
+
+        $this->assertTrue($this->finder->exists($path), '[module.json] does not exist!');
         $this->assertMatchesSnapshot($this->finder->get($path));
     }
 
     /** @test */
-    public function it_generates_a_start_php_file()
+    public function it_generates_a_web_routes_file()
     {
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $files = $this->app['modules']->config('stubs.files');
+        $this->generateModule();
 
-        $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.start');
+        $path = $this->modulePath . '/' . $files['routes/web'];
 
         $this->assertMatchesSnapshot($this->finder->get($path));
     }
@@ -80,7 +103,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_webpack_file()
     {
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->generateModule();
 
         $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.webpack');
 
@@ -90,17 +113,26 @@ class ModuleMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_module_resources()
     {
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->generateModule();
 
-        $path = base_path('Modules/Blog') . '/Providers/BlogServiceProvider.php';
-        $this->assertTrue($this->finder->exists($path));
-        $this->assertMatchesSnapshot($this->finder->get($path));
+        $paths = [
+            '/Providers/BlogServiceProvider.php',
+            '/database/seeds/BlogDatabaseSeeder.php',
+            '/Providers/RouteServiceProvider.php'
+        ];
+
+        foreach ($paths as $path) {
+            $filePath = $this->modulePath . $path;
+
+            $this->assertTrue($this->finder->exists($filePath), "Resource [{$filePath}] does not exist!");
+            $this->assertMatchesSnapshot($this->finder->get($filePath));
+        }
     }
 
     /** @test */
     public function it_generates_a_composer_json_file()
     {
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->generateModule();
 
         $file = $this->finder->get($this->modulePath . '/composer.json');
 
@@ -108,9 +140,17 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_generates_a_module_folder_using_studly_case()
+    {
+        $this->generateModule('ModuleName');
+
+        $this->assertTrue($this->finder->exists(base_path('Modules/ModuleName')));
+    }
+
+    /** @test */
     public function it_generates_a_module_namespace_using_studly_case()
     {
-        $this->artisan('module:make', ['name' => ['ModuleName']]);
+        $this->generateModule('ModuleName');
 
         $file = $this->finder->get(base_path('Modules/ModuleName') . '/Providers/ModuleNameServiceProvider.php');
 
@@ -120,61 +160,86 @@ class ModuleMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_plain_module_with_no_resources()
     {
-        $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
+        $this->generateModule('ModuleName', ['--plain' => true]);
 
-        $path = base_path('Modules/ModuleName') . '/Providers/ModuleNameServiceProvider.php';
-        $this->assertFalse($this->finder->exists($path));
+        $paths = [
+            '/Providers/ModuleNameServiceProvider.php',
+            '/database/seeds/ModuleNameDatabaseSeeder.php'
+        ];
+
+        foreach ($paths as $path) {
+            $filePath = base_path('Modules/ModuleName') . $path;
+
+            $this->assertFalse($this->finder->exists($filePath), "[{$path}] exists!");
+        }
     }
 
     /** @test */
     public function it_generates_a_plain_module_with_no_files()
     {
-        $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
+        $this->generateModule('ModuleName', ['--plain' => true]);
 
         foreach (config('modules.stubs.files') as $file) {
             $path = base_path('Modules/ModuleName') . '/' . $file;
 
-            $this->assertFalse($this->finder->exists($path), "File found: {$file}");
+            $this->assertFalse($this->finder->exists($path), "[{$file}] exists!");
         }
 
         $path = base_path('Modules/ModuleName') . '/module.json';
-        $this->assertTrue($this->finder->exists($path), 'module.json not found');
+
+        $this->assertTrue($this->finder->exists($path), '[module.json] does not exist!');
     }
 
     /** @test */
     public function it_generates_a_plain_module_with_no_service_provider_in_module_json_file()
     {
-        $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
+        $this->generateModule('ModuleName', ['--plain' => true]);
 
         $path = base_path('Modules/ModuleName') . '/module.json';
-        $content = json_decode($this->finder->get($path));
+        $content = json_decode($this->finder->get($path), true);
 
-        $this->assertCount(0, $content->providers);
+        $this->assertCount(0, $content['providers']);
     }
 
     /** @test */
-    public function it_alerts_you_when_a_module_already_exists()
+    public function it_outputs_an_error_when_a_module_already_exists()
     {
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->generateModule();
+        $this->generateModule();
 
-        // The return in this variable is intentional so the strings actually match
-        $expected = 'Module [Blog] already exists!
-';
-        $this->assertEquals($expected, Artisan::output());
+        $this->assertStringContainsString('already exists', Artisan::output());
     }
 
     /** @test */
-    public function it_still_generates_a_module_if_it_exists_using_force_flag()
+    public function it_still_generates_a_module_if_it_exists_when_using_the_force_flag()
     {
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->artisan('module:make', ['name' => ['Blog'], '--force' => true]);
+        $this->generateModule();
+        $this->generateModule('Blog', ['--force' => true]);
 
         $output = Artisan::output();
-        $notExpected = 'Module [Blog] already exists!
-';
 
-        $this->assertNotEquals($notExpected, $output);
-        $this->assertTrue(str_contains($output, 'Module [Blog] was created successfully.'));
+        $this->assertStringNotContainsString('already exists', $output);
+        $this->assertStringContainsString('created', $output);
+    }
+
+    /** @test */
+    public function it_generates_an_enabled_module_by_default()
+    {
+        $this->generateModule();
+
+        $this->assertTrue($this->repository->isEnabled('Blog'));
+    }
+
+    /** @test */
+    public function it_generates_a_disabled_module_with_the_disabled_flag()
+    {
+        $this->generateModule('Blog', ['--disabled' => true]);
+
+        $this->assertTrue($this->repository->isDisabled('Blog'));
+    }
+
+    private function generateModule(string $moduleName = 'Blog', array $arguments = []): void
+    {
+        $this->artisan('module:make', array_merge(['name' => [$moduleName]], $arguments));
     }
 }

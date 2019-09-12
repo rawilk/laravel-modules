@@ -10,52 +10,26 @@ class RouteProviderMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'module';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:route-provider
-                            {module? : The name of the module to create the provider for}';
+                            {module? : The name of the module to create the provider for}
+                            {--force : Force the operation to run when the file already exists}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new route service provider for the specified module';
+    /** @var string */
+    protected $description = 'Create a new route provider for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
 
-        return (new Stub('/route-provider.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getFileName(),
-            'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
-            'MODULE'            => $this->getModuleName(),
-            'ROUTES_PATH'       => $this->getRoutesPath(),
-        ]))->render();
+        return $module->config('paths.generator.provider.namespace') ?: $module->config('paths.generator.provider.path', 'Providers');
     }
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -64,33 +38,28 @@ class RouteProviderMakeCommand extends GeneratorCommand
         return $path . $generatorPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * Get the name of the file.
-     *
-     * @return string
-     */
-    protected function getFileName() : string
+    protected function getFileName(): string
     {
         return 'RouteServiceProvider';
     }
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
+    protected function getTemplateContents(): string
     {
-        return $this->laravel['modules']->config('paths.generator.provider.path', 'Providers');
+        /** @var \Rawilk\LaravelModules\Module $module */
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub('/route-provider.stub', [
+            'NAMESPACE'        => $this->getClassNamespace($module),
+            'CLASS'            => $this->getFileName(),
+            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
+            'MODULE'           => $this->getModuleName(),
+            'WEB_ROUTES_PATH'  => $this->getWebRoutesPath(),
+            'LOWER_NAME'       => $module->getLowerName(),
+        ]))->render();
     }
 
-    /**
-     * Get the path of the main route file.
-     *
-     * @return string
-     */
-    private function getRoutesPath()
+    private function getWebRoutesPath(): string
     {
-        return '/' . $this->laravel['config']->get('stubs.files.routes', 'routes/web.php');
+        return '/' . $this->laravel['modules']->config('stubs.files.routes/web', 'routes/web.php');
     }
 }

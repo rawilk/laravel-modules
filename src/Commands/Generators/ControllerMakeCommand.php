@@ -2,6 +2,7 @@
 
 namespace Rawilk\LaravelModules\Commands\Generators;
 
+use Illuminate\Support\Str;
 use Rawilk\LaravelModules\Support\Config\GenerateConfigReader;
 use Rawilk\LaravelModules\Support\Stub;
 use Rawilk\LaravelModules\Traits\ModuleCommands;
@@ -10,37 +11,28 @@ class ControllerMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of argument being used.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'controller';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-controller
                             {controller : The name of the controller class}
-                            {module? : The name of the module to make the controller for}
+                            {module? : The name of the module to create the controller for}
                             {--p|plain : Generate a plain controller}
-                            {--base_class= : Override the default base controller class}';
+                            {--base_class= : Override the default base controller class (from config)}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $description = 'Generate a new controller for the specified module.';
 
-    /**
-     * Get controller name.
-     *
-     * @return string
-     */
-    public function getDestinationFilePath()
+    protected function getDefaultNamespace(): string
+    {
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
+
+        return $module->config('paths.generator.controller.namespace') ?: $module->config('paths.generator.controller.path', 'Http/Controllers');
+    }
+
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -49,65 +41,46 @@ class ControllerMakeCommand extends GeneratorCommand
         return $path . $controllerPath->getPath() . '/' . $this->getControllerName() . '.php';
     }
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
+        /** @var \Rawilk\LaravelModules\Module $module */
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'MODULENAME'        => $module->getStudlyName(),
-            'CONTROLLERNAME'    => $this->getControllerName(),
-            'NAMESPACE'         => $module->getStudlyName(),
-            'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => class_basename($this->getControllerName()),
-            'LOWER_NAME'        => $module->getLowerName(),
-            'MODULE'            => $this->getModuleName(),
-            'NAME'              => $this->getModuleName(),
-            'STUDLY_NAME'       => $module->getStudlyName(),
-            'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
-            'BASE_CLASS'        => $this->getBaseClass('controller'),
-            'BASE_CLASS_SHORT'  => $this->getBaseClass('controller', true),
+            'MODULENAME'       => $module->getStudlyName(),
+            'CONTROLLERNAME'   => $this->getControllerName(),
+            'NAMESPACE'        => $module->getStudlyName(),
+            'CLASS_NAMESPACE'  => $this->getClassNamespace($module),
+            'CLASS'            => $this->getControllerNameWithoutNamespace(),
+            'LOWER_NAME'       => $module->getLowerName(),
+            'MODULE'           => $this->getModuleName(),
+            'NAME'             => $this->getModuleName(),
+            'STUDLY_NAME'      => $module->getStudlyName(),
+            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
+            'BASE_CLASS'       => $this->getBaseClass('controller'),
+            'BASE_CLASS_SHORT' => $this->getBaseClass('controller', true),
         ]))->render();
     }
 
-    /**
-     * Get the controller name.
-     *
-     * @return string
-     */
-    protected function getControllerName()
+    private function getControllerName(): string
     {
-        $controller = studly_case($this->argument('controller'));
+        $controller = Str::studly($this->argument('controller'));
 
-        if (str_contains(strtolower($controller), 'controller') === false) {
+        if (! Str::contains(strtolower($controller), 'controller')) {
             $controller .= 'Controller';
         }
 
         return $controller;
     }
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
+    private function getControllerNameWithoutNamespace(): string
     {
-        return $this->laravel['modules']->config('paths.generator.controller.path', 'Http/Controllers');
+        return class_basename($this->getControllerName());
     }
 
-    /**
-     * Get the stub file name based on the plain option
-     *
-     * @return string
-     */
-    private function getStubName()
+    private function getStubName(): string
     {
-        if ($this->option('plain')) {
+        if ($this->option('plain') === true) {
             return '/controller-plain.stub';
         }
 

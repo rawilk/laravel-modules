@@ -2,22 +2,18 @@
 
 namespace Rawilk\LaravelModules\Tests;
 
-use Rawilk\LaravelModules\Exceptions\InvalidJsonException;
+use Rawilk\LaravelModules\Exceptions\InvalidJson;
 use Rawilk\LaravelModules\Json;
 
 class JsonTest extends BaseTestCase
 {
-    /**
-     * @var \Rawilk\LaravelModules\Json
-     */
+    /** @var \Rawilk\LaravelModules\Json */
     private $json;
 
     /**
      * Setup the test environment.
-     *
-     * @throws \Rawilk\LaravelModules\Exceptions\InvalidJsonException
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -38,14 +34,14 @@ class JsonTest extends BaseTestCase
     {
         $path = __DIR__ . '/stubs/InvalidJsonModule/module.json';
 
-        $this->expectException(InvalidJsonException::class);
-        $this->expectExceptionMessage('Error processing file: ' . $path . '. Error: Syntax error');
+        $this->expectException(InvalidJson::class);
+        $this->expectExceptionMessage("Error processing file: {$path}. Error: Syntax error");
 
         new Json($path, $this->app['files']);
     }
 
     /** @test */
-    public function it_gets_attributes_from_json_file()
+    public function it_gets_attributes_from_a_json_file()
     {
         $this->assertEquals('Order', $this->json->get('name'));
         $this->assertEquals('order', $this->json->get('alias'));
@@ -57,7 +53,7 @@ class JsonTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_reads_attributes_from_magic_get_method()
+    public function it_reads_attributes_from_magic_methods()
     {
         $this->assertEquals('Order', $this->json->name);
         $this->assertEquals('order', $this->json->alias);
@@ -69,10 +65,9 @@ class JsonTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_makes_json_class()
+    public function it_returns_an_instance_of_json_with_the_make_method()
     {
         $path = __DIR__ . '/stubs/valid/module.json';
-
         $json = Json::make($path, $this->app['files']);
 
         $this->assertInstanceOf(Json::class, $json);
@@ -91,7 +86,34 @@ class JsonTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_sets_a_key_value_pair()
+    public function it_decodes_json()
+    {
+        $expected = '{
+    "name": "Order",
+    "alias": "order",
+    "description": "My demo module",
+    "version": "0.1",
+    "keywords": [
+        "my",
+        "stub",
+        "module"
+    ],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\\Order\\\Providers\\\OrderServiceProvider",
+        "Modules\\\Order\\\Providers\\\EventServiceProvider",
+        "Modules\\\Order\\\Providers\\\RouteServiceProvider"
+    ],
+    "aliases": [],
+    "files": []
+}';
+
+        $this->assertEquals(str_replace("\r", '', $expected), $this->json->toJsonPretty());
+    }
+
+    /** @test */
+    public function it_sets_a_key_value()
     {
         $this->json->set('key', 'value');
 
@@ -99,35 +121,30 @@ class JsonTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_can_be_casted_to_string()
+    public function it_can_be_casted_to_a_string()
     {
-        $expected = $this->expectedJson();
+        $expected = '{
+    "name": "Order",
+    "alias": "order",
+    "description": "My demo module",
+    "version": "0.1",
+    "keywords": [
+        "my",
+        "stub",
+        "module"
+    ],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\\Order\\\Providers\\\OrderServiceProvider",
+        "Modules\\\Order\\\Providers\\\EventServiceProvider",
+        "Modules\\\Order\\\Providers\\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+    ]
+}';
 
-        $this->assertJsonStringEqualsJsonString($expected, (string) $this->json);
-    }
-
-    /**
-     * The expected json output of the module.json file.
-     *
-     * @return string
-     */
-    private function expectedJson()
-    {
-        return json_encode([
-            'name'        => 'Order',
-            'alias'       => 'order',
-            'description' => 'My demo module',
-            'version'     => '0.1',
-            'keywords'    => ['my', 'stub', 'module'],
-            'active'      => 1,
-            'order'       => 1,
-            'providers'   => [
-                "Modules\\Order\\Providers\\OrderServiceProvider",
-                "Modules\\Order\\Providers\\EventServiceProvider",
-                "Modules\\Order\\Providers\\RouteServiceProvider"
-            ],
-            'aliases'     => (object) [],
-            'files'       => []
-        ]);
+        $this->assertEquals($expected, str_replace("\r", '', (string) $this->json));
     }
 }

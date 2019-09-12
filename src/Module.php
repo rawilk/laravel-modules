@@ -2,173 +2,68 @@
 
 namespace Rawilk\LaravelModules;
 
-use Illuminate\Container\Container;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use Rawilk\LaravelModules\Contracts\Activator;
 
-abstract class Module extends ServiceProvider
+abstract class Module
 {
     use Macroable;
 
-    /**
-     * The laravel application instance.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
+    /** @var \Rawilk\LaravelModules\Contracts\Activator */
+    private $activator;
+
+    /** @var \Illuminate\Contracts\Foundation\Application */
     protected $app;
 
-    /**
-     * The module name.
-     *
-     * @var
-     */
-    protected $name;
+    /** @var \Illuminate\Cache\CacheManager */
+    private $cache;
 
-    /**
-     * The module path.
-     *
-     * @var string
-     */
-    protected $path;
+    /** @var \Illuminate\Filesystem\Filesystem */
+    private $files;
 
-    /**
-     * @var array of cached Json objects, keyed by filename
-     */
+    /** @var array */
     protected $moduleJson = [];
 
-    /**
-     * Create a new provider instance.
-     *
-     * @param Container $app
-     * @param string $name
-     * @param string $path
-     */
-    public function __construct(Container $app, $name, $path)
-    {
-        parent::__construct($app);
+    /** @var string */
+    protected $name;
 
+    /** @var string */
+    protected $path;
+
+    /** @var \Illuminate\Translation\Translator */
+    private $translator;
+
+    /**
+     * @param \Illuminate\Contracts\Container\Container $app
+     * @param string $name
+     * @param string|null $path
+     */
+    public function __construct(Container $app, string $name, ?string $path)
+    {
         $this->name = $name;
         $this->path = $path;
+        $this->cache = $app['cache'];
+        $this->files = $app['files'];
+        $this->translator = $app['translator'];
+        $this->activator = $app[Activator::class];
+        $this->app = $app;
     }
 
     /**
-     * Get laravel instance.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application
-     */
-    public function getLaravel()
-    {
-        return $this->app;
-    }
-
-    /**
-     * Get the module's name.
+     * Get the path to the cached *_module.php file.
      *
      * @return string
      */
-    public function getName()
-    {
-        return $this->name;
-    }
+    abstract public function getCachedServicesPath(): string;
 
-    /**
-     * Get the module name as lower case.
-     *
-     * @return string
-     */
-    public function getLowerName()
-    {
-        return strtolower($this->name);
-    }
+    abstract public function registerAliases(): void;
 
-    /**
-     * Get the module name as studly case.
-     *
-     * @return string
-     */
-    public function getStudlyName()
-    {
-        return Str::studly($this->name);
-    }
+    abstract public function registerProviders(): void;
 
-    /**
-     * Get the module name as snake case.
-     *
-     * @return string
-     */
-    public function getSnakeName()
-    {
-        return Str::snake($this->name);
-    }
-
-    /**
-     * Get the module's description.
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->get('description');
-    }
-
-    /**
-     * Get the module's alias.
-     *
-     * @return string
-     */
-    public function getAlias()
-    {
-        return $this->get('alias');
-    }
-
-    /**
-     * Get the module's priority.
-     *
-     * @return string
-     */
-    public function getPriority()
-    {
-        return $this->get('priority');
-    }
-
-    /**
-     * Get the module's requirements.
-     *
-     * @return array
-     */
-    public function getRequires()
-    {
-        return $this->get('requires');
-    }
-
-    /**
-     * Get the module's path.
-     *
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set the module's path.
-     *
-     * @param string $path
-     * @return $this
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-    /**
-     * Bootstrap the application events.
-     */
-    public function boot()
+    public function boot(): void
     {
         if (config('modules.register.translations', true)) {
             $this->registerTranslation();
@@ -181,12 +76,180 @@ abstract class Module extends ServiceProvider
         $this->fireEvent('boot');
     }
 
-    /**
-     * Register the module's translations.
-     *
-     * @return void
-     */
-    protected function registerTranslation()
+    public function delete(): bool
+    {
+        $this->activator->delete($this);
+
+        return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
+    }
+
+    public function disable(): void
+    {
+        $this->fireEvent('disabling');
+
+        $this->activator->disable($this);
+        $this->flushCache();
+
+        $this->fireEvent('disabled');
+    }
+
+    public function enable(): void
+    {
+        $this->fireEvent('enabling');
+
+        $this->activator->enable($this);
+        $this->flushCache();
+
+        $this->fireEvent('enabled');
+    }
+
+    public function get(string $key, $default = null)
+    {
+        return $this->json()->get($key, $default);
+    }
+
+    public function getAlias(): string
+    {
+        return $this->get('alias');
+    }
+
+    public function getAssets(): array
+    {
+        try {
+            return $this->json('assets.json')->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function getAssetAttr(string $key, $default = null)
+    {
+        try {
+            return $this->json('assets.json')->get($key, $default);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function getComposerAttr(string $key, $default = null)
+    {
+        return $this->json('composer.json')->get($key, $default);
+    }
+
+    public function getDescription(): string
+    {
+        return $this->get('description');
+    }
+
+    public function getExtraPath(string $path): string
+    {
+        return $this->getPath() . '/' . $path;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getLowerName(): string
+    {
+        return strtolower($this->name);
+    }
+
+    public function getPriority(): string
+    {
+        return $this->get('priority');
+    }
+
+    public function getRequires(): array
+    {
+        return $this->get('requires');
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function getSnakeName(): string
+    {
+        return Str::snake($this->name);
+    }
+
+    public function getStudlyName(): string
+    {
+        return Str::studly($this->name);
+    }
+
+    public function isDisabled(): bool
+    {
+        return $this->activator->hasStatus($this, false);
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->activator->hasStatus($this, true);
+    }
+
+    public function isStatus(bool $status): bool
+    {
+        return $this->activator->hasStatus($this, $status);
+    }
+
+    public function json(?string $file = null): Json
+    {
+        if ($file === null) {
+            $file = 'module.json';
+        }
+
+        return Arr::get($this->moduleJson, $file, function () use ($file) {
+            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->files);
+        });
+    }
+
+    public function register(): void
+    {
+        $this->registerAliases();
+
+        $this->registerProviders();
+
+        if (! $this->isLoadFilesOnBoot()) {
+            $this->registerFiles();
+        }
+
+        $this->fireEvent('register');
+    }
+
+    public function setActive(bool $active): bool
+    {
+        return $this->activator->setActive($this, $active);
+    }
+
+    public function setPath(string $path): self
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    protected function fireEvent(string $event): void
+    {
+        $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
+    }
+
+    protected function isLoadFilesOnBoot(): bool
+    {
+        return config('modules.register.files', 'register') === 'boot';
+    }
+
+    protected function registerFiles(): void
+    {
+        foreach ($this->get('files', []) as $file) {
+            include $this->path . '/' . $file;
+        }
+    }
+
+    protected function registerTranslation(): void
     {
         $lowerName = $this->getLowerName();
 
@@ -197,214 +260,20 @@ abstract class Module extends ServiceProvider
         }
     }
 
-    /**
-     * Get json contents from the cache, setting as needed.
-     *
-     * @param string $file
-     * @return Json|callable
-     */
-    public function json($file = null) : Json
+    private function flushCache(): void
     {
-        if (is_null($file)) {
-            $file = 'module.json';
-        }
-
-        return array_get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
-        });
-    }
-
-    /**
-     * Get a value from the json file from the given key.
-     *
-     * @param string $key
-     * @param null|mixed $default
-     * @return mixed
-     */
-    public function get(string $key, $default = null)
-    {
-        return $this->json()->get($key, $default);
-    }
-
-    /**
-     * Get a value from the composer.json from the given key.
-     *
-     * @param string $key
-     * @param null|mixed $default
-     * @return mixed
-     */
-    public function getComposerAttr($key, $default = null)
-    {
-        return $this->json('composer.json')->get($key, $default);
-    }
-
-    /**
-     * Register the module.
-     */
-    public function register()
-    {
-        $this->registerAliases();
-        $this->registerProviders();
-
-        if (! $this->isLoadFilesOnBoot()) {
-            $this->registerFiles();
-        }
-
-        $this->fireEvent('register');
-    }
-
-    /**
-     * Register the module event.
-     *
-     * @param string $event
-     */
-    protected function fireEvent($event)
-    {
-        $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
-    }
-
-    /**
-     * Register the aliases from this module.
-     */
-    abstract public function registerAliases();
-
-    /**
-     * Register the service providers from this module.
-     */
-    abstract public function registerProviders();
-
-    /**
-     * Get the path to the cached *_module.php file.
-     *
-     * @return string
-     */
-    abstract public function getCachedServicesPath();
-
-    /**
-     * Register the files from this module.
-     */
-    protected function registerFiles()
-    {
-        foreach ($this->get('files', []) as $file) {
-            include $this->path . '/' . $file;
+        if (config('modules.cache.enabled')) {
+            $this->cache->store()->flush();
         }
     }
 
-    /**
-     * Handle magic method __toString.
-     *
-     * @return string
-     */
+    private function loadTranslationsFrom(string $path, string $namespace): void
+    {
+        $this->translator->addNamespace($namespace, $path);
+    }
+
     public function __toString()
     {
         return $this->getStudlyName();
-    }
-
-    /**
-     * Determine whether the given status is the same with the current module status.
-     *
-     * @param int $status
-     * @return bool
-     */
-    public function isStatus($status) : bool
-    {
-        return $this->get('active', 0) === $status;
-    }
-
-    /**
-     * Determine if the current module is activated.
-     *
-     * @return bool
-     */
-    public function enabled() : bool
-    {
-        return $this->isStatus(1);
-    }
-
-    /**
-     *  Determine if the current module is disabled.
-     *
-     * @return bool
-     */
-    public function disabled() : bool
-    {
-        return ! $this->enabled();
-    }
-
-    /**
-     * Set active state for current module.
-     *
-     * @param int $active
-     * @return int
-     */
-    public function setActive($active)
-    {
-        return $this->json()->set('active', $active)->save();
-    }
-
-    /**
-     * Disable the current module.
-     */
-    public function disable()
-    {
-        $this->fireEvent('disabling');
-
-        $this->setActive(0);
-
-        $this->fireEvent('disabled');
-    }
-
-    /**
-     * Enable the current module.
-     */
-    public function enable()
-    {
-        $this->fireEvent('enabling');
-
-        $this->setActive(1);
-
-        $this->fireEvent('enabled');
-    }
-
-    /**
-     * Delete the current module.
-     *
-     * @return bool
-     */
-    public function delete()
-    {
-        return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
-    }
-
-    /**
-     * Get extra path.
-     *
-     * @param string $path
-     * @return string
-     */
-    public function getExtraPath(string $path) : string
-    {
-        return $this->getPath() . '/' . $path;
-    }
-
-    /**
-     * Handle magic method __get.
-     *
-     * @param string $key
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        return $this->get($key);
-    }
-
-    /**
-     * Check if can load files of module on boot method.
-     *
-     * @return bool
-     */
-    protected function isLoadFilesOnBoot()
-    {
-        return config('modules.register.files', 'register') === 'boot';
     }
 }

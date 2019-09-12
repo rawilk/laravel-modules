@@ -7,30 +7,24 @@ use Illuminate\Contracts\Validation\Rule;
 class $CLASS$ implements Rule
 {
     /**
-     * Create a new rule instance.
+     * Determine if the validation rule passes.
+     *
+     * @param string $attribute
+     * @param mixed $value
+     * @return bool
      */
-     public function __construct()
-     {
-     }
+    public function passes($attribute, $value): bool
+    {
 
-     /**
-      * Determine if the validation rule passes.
-      *
-      * @param string $attribute
-      * @param mixed $value
-      * @return bool
-      */
-     public function passes($attribute, $value)
-     {
-     }
+    }
 
-     /**
-      * Get the validation error message.
-      *
-      * @return string
-      */
-     public function message()
-     {
-         return 'The validation error message';
-     }
+    /**
+     * Get the validation error message.
+     *
+     * @return string
+     */
+    public function message(): string
+    {
+        return 'The validation error message';
+    }
 }

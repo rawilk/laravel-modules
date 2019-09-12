@@ -10,65 +10,60 @@ class TestMakeCommand extends GeneratorCommand
 {
     use ModuleCommands;
 
-    /**
-     * The name of 'name' argument.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $argumentName = 'name';
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $signature = 'module:make-test
-                            {name : The name of the test class}
-                            {module? : The name of the module to create the test for}';
+                            {name : The name of the test}
+                            {module? : The name of the module to create the test for}
+                            {--feature : Indicates the test is a feature test}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new test class for the specified module';
+    /** @var string */
+    protected $description = 'Create a new test class for the specified module.';
 
-    /**
-     * Get the template contents.
-     *
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getDefaultNamespace(): string
     {
+        /** @var \Rawilk\LaravelModules\Contracts\Repository $module */
+        $module = $this->laravel['modules'];
+
+        if ($this->option('feature')) {
+            return $module->config('paths.generator.test-feature.namespace') ?: $module->config('paths.generator.test-feature.path', 'tests/Feature');
+        }
+
+        return $module->config('paths.generator.test.namespace') ?: $module->config('paths.generator.test.path', 'tests/Unit');
+    }
+
+    protected function getDestinationFilePath(): string
+    {
+        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+
+        if ($this->option('feature')) {
+            $testPath = GenerateConfigReader::read('test-feature');
+        } else {
+            $testPath = GenerateConfigReader::read('test');
+        }
+
+        return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
+    }
+
+    protected function getTemplateContents(): string
+    {
+        /** @var \Rawilk\LaravelModules\Module $module */
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/unit-test.stub', [
+        return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
     }
 
-    /**
-     * Get the destination file path.
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
+    private function getStubName(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        if ($this->option('feature')) {
+            return '/feature-test.stub';
+        }
 
-        $testPath = GenerateConfigReader::read('test');
-
-        return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
-    }
-
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
-    {
-        return $this->laravel['modules']->config('paths.generator.test.path', 'Tests');
+        return '/unit-test.stub';
     }
 }
