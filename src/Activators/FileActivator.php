@@ -14,7 +14,7 @@ class FileActivator implements Activator
     /** @var string */
     private $cacheKey;
 
-    /** @var string */
+    /** @var int */
     private $cacheLifetime;
 
     /** @var \Illuminate\Contracts\Config\Repository */

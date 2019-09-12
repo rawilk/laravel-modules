@@ -21,6 +21,8 @@ abstract class BaseTestCase extends OrchestraTestCase
         if ($this->app['files']->isDirectory($dir = base_path('Modules'))) {
             $this->app['files']->delete($dir);
         }
+
+        $this->setUpDatabase();
     }
 
     /**
@@ -80,5 +82,12 @@ abstract class BaseTestCase extends OrchestraTestCase
         return [
             LaravelModulesServiceProvider::class
         ];
+    }
+
+    private function setUpDatabase(): void
+    {
+        include_once __DIR__ . '/../database/migrations/create_modules_table.php.stub';
+
+        (new \CreateModulesTable())->up();
     }
 }

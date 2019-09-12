@@ -12,7 +12,9 @@ class LaravelModulesServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         $this->registerNamespaces();
+        $this->registerModuleModel();
         $this->registerModules();
+        $this->publishMigrations();
     }
 
     public function register(): void

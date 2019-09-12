@@ -3,7 +3,9 @@
 namespace Rawilk\LaravelModules\Tests;
 
 use Rawilk\LaravelModules\Contracts\Activator;
+use Rawilk\LaravelModules\Contracts\ModuleModel;
 use Rawilk\LaravelModules\Contracts\Repository;
+use Rawilk\LaravelModules\Models\Module;
 
 class LaravelModulesServiceProviderTest extends BaseTestCase
 {
@@ -18,5 +20,11 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
     public function it_binds_activator_to_the_activator_class()
     {
         $this->assertInstanceOf(Activator::class, app(Activator::class));
+    }
+
+    /** @test */
+    public function it_binds_a_module_model_instance()
+    {
+        $this->assertInstanceOf(Module::class, app(ModuleModel::class));
     }
 }

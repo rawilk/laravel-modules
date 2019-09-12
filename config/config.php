@@ -4,7 +4,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Mail\Mailable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
+use Rawilk\LaravelModules\Activators\DatabaseActivator;
 use Rawilk\LaravelModules\Activators\FileActivator;
+use Rawilk\LaravelModules\Models\Module;
 
 return [
     /*
@@ -218,6 +220,11 @@ return [
     |
     */
     'activators' => [
+        'database' => [
+            'class'          => DatabaseActivator::class,
+            'cache-key'      => 'activator.db.installed.%s',
+            'cache-lifetime' => 604800,
+        ],
         'file' => [
             'class'          => FileActivator::class,
             'statuses-file'  => storage_path('module_statuses.json'),
@@ -227,4 +234,18 @@ return [
     ],
 
     'activator' => 'file',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Models
+    |--------------------------------------------------------------------------
+    |
+    | Here you may override the models used in this package with your own models.
+    | Just be sure to implement \Rawilk\LaravelModules\Contracts\ModuleModel
+    | in your model class.
+    |
+    */
+    'models' => [
+        'module' => Module::class,
+    ],
 ];
