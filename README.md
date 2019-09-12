@@ -9,15 +9,13 @@
 
 `rawilk/laravel-modules` is a Laravel package to help build modular apps using modules.
 A module is like a Laravel package; it has some views, controllers and models.
-Laravel-Modules is supported and tested in Laravel 5.
+Laravel-Modules is supported and tested in Laravel 6.
 
-This package is a re-published and slightly modified version of [nWidart/laravel-modules](https://github.com/nWidart/laravel-modules).
-I mainly created my own version of this package because I wanted full control over how
-modules are managed, and I also have my own needs as for what I need the package to do. If you find that
-`nWidart/laravel-modules` fits your needs better than `rawilk/laravel-modules`, by all means use that one.
-My version of the package is **not** meant to be a replacement or competitor to the other package.
+This package is inspired by [nWidart/laravel-modules](https://github.com/nWidart/laravel-modules).
+Although laravel-modules is mainly intended for my own use and has certain parts written to cater
+to my needs, you are free to use it.
 
-## Install
+## Installation
 
 To install the package through composer, run the following command
 
@@ -48,12 +46,17 @@ By default the modules are not loaded automatically. You can autoload the module
 }
 ```
 
-- If you changed the module namespace in the [config file](https://github.com/rawilk/laravel-modules/blob/master/config/config.php#L12), be sure to change 
+- If you changed the module namespace in the [config file](https://github.com/rawilk/laravel-modules/blob/master/config/config.php#L20), be sure to change 
 `"Modules\\"` to your new namespace.
-- If you changed the directory where the modules get stored in the [config file](https://github.com/rawilk/laravel-modules/blob/master/config/config.php#L77), be sure to change
+- If you changed the directory where the modules get stored in the [config file](https://github.com/rawilk/laravel-modules/blob/master/config/config.php#L91), be sure to change
 `"Modules/"` to the directory they will be stored in.
 
 **Tip: Be sure sure to run `composer dump-autoload` afterwards.**
+
+## Database:
+
+Database installation and activation of modules is still a work in progress and is not ready for production yet. I
+do have plans to finish this functionality in a future release.
 
 ## Documentation
 
@@ -61,8 +64,7 @@ Further information and instructions can be found at: https://rawilk.github.io/l
 
 ## Credits
 
-- [Randall Wilk](https://github.com/rawilk)
-- [Nicolas Widart](https://github.com/nwidart)
+- [Randall Wilk](https://randallwilk.com)
 
 ## License
 
