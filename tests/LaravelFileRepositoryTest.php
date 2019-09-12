@@ -73,8 +73,8 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertCount(2, $this->repository->onlyCustomPaths()->getByStatus(false));
-        $this->assertCount(2, $this->repository->onlyCustomPaths()->allDisabled());
+        $this->assertCount(3, $this->repository->onlyCustomPaths()->getByStatus(false));
+        $this->assertCount(3, $this->repository->onlyCustomPaths()->allDisabled());
     }
 
     /** @test */
@@ -82,7 +82,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertEquals(2, $this->repository->onlyCustomPaths()->count());
+        $this->assertEquals(3, $this->repository->onlyCustomPaths()->count());
     }
 
     /** @test */
