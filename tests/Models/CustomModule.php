@@ -49,4 +49,39 @@ class CustomModule extends Model implements ModuleModel
     {
 
     }
+
+    public static function disable(string $name): void
+    {
+
+    }
+
+    public static function enable(string $name): void
+    {
+
+    }
+
+    public static function moduleExists(string $name): bool
+    {
+
+    }
+
+    public function getName(): string
+    {
+
+    }
+
+    public function hasStatus(bool $status): bool
+    {
+
+    }
+
+    public function isDisabled(): bool
+    {
+
+    }
+
+    public function isEnabled(): bool
+    {
+
+    }
 }
